@@ -1,4 +1,4 @@
-import {Entity, PrimaryKey, Property} from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity()
 export class Post {
@@ -8,7 +8,7 @@ export class Post {
     @Property()
     createdAt = new Date();
 
-    @Property({onUpdate: () => new Date()})
+    @Property({ onUpdate: () => new Date() })
     updatedAt = new Date();
 
     @Property()

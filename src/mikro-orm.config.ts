@@ -1,6 +1,7 @@
-import {Configuration} from "@mikro-orm/core/utils/Configuration";
-import {Post} from "./entities/Post";
-import {__prod__} from "./constants";
+import { Configuration } from '@mikro-orm/core/utils/Configuration';
+
+import { __prod__ } from './constants';
+import { Post } from './entities/Post';
 
 type MikroOrmConfig = {
     entities: (typeof Post)[];
