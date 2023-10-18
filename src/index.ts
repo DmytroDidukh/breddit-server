@@ -1,5 +1,4 @@
 import {MikroORM} from '@mikro-orm/core';
-import {__prod__} from "./constants";
 import {Post} from "./entities/Post";
 import {mikroOrmConfig} from "./mikro-orm.config";
 
@@ -17,3 +16,5 @@ main().catch(error => {
 }).finally(() => {
     process.exit(0);
 });
+
+// https://youtu.be/I6ypD7qv3Z8?t=1585
