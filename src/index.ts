@@ -21,4 +21,3 @@ main()
     .finally(() => {
         process.exit(0);
     });
-
