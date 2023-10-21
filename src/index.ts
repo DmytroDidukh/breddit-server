@@ -1,23 +1,17 @@
-import { MikroORM } from '@mikro-orm/core';
+import express, { Express } from 'express';
 
-import { Post } from './entities/Post';
-import mikroOrmConfig from './mikro-orm.config';
+import { setupDatabase } from './db';
 
-const main = async () => {
-    const orm = await MikroORM.init(mikroOrmConfig);
+const app: Express = express();
+setupDatabase();
 
-    const post = orm.em.create(Post, {
-        title: 'my first post',
-    });
-    // const post = new Post({title: 'my first post'});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    await orm.em.persistAndFlush(post);
-};
+app.get('/hello', (_, res) => {
+    res.send('hello');
+});
 
-main()
-    .catch((error) => {
-        console.error(error);
-    })
-    .finally(() => {
-        process.exit(0);
-    });
+app.listen(5001, () => {
+    console.log('server started on localhost:5001');
+});

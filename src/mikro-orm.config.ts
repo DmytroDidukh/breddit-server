@@ -10,10 +10,11 @@ export default {
         path: path.join(__dirname, './migrations'),
         pattern: /^[\w-]+\d+\.[tj]s$/,
     },
+    allowGlobalContext: true,
     entities: [Post],
     dbName: 'breddit',
     user: 'postgres',
     password: '875621',
-    type: 'postgresql', // Make sure the type property is one of the allowed values
+    type: 'postgresql',
     debug: !__prod__,
 } as Parameters<typeof MikroORM.init>[0];
