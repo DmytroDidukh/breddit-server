@@ -1,17 +1,32 @@
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import cors from 'cors';
 import express, { Express } from 'express';
+import 'reflect-metadata'; // We need it before type-graphql
+import { buildSchema } from 'type-graphql';
 
 import { setupDatabase } from './db';
+import { RandomResolver } from './resolvers';
 
-const app: Express = express();
-setupDatabase();
+async function start() {
+    const app: Express = express();
+    const apolloServer = new ApolloServer({
+        schema: await buildSchema({
+            resolvers: [RandomResolver],
+            validate: false,
+        }),
+    });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+    await apolloServer.start();
+    await setupDatabase();
 
-app.get('/hello', (_, res) => {
-    res.send('hello');
-});
+    app.use('/graphql', cors<cors.CorsRequest>(), express.json(), expressMiddleware(apolloServer));
 
-app.listen(5001, () => {
-    console.log('server started on localhost:5001');
+    app.listen(4000, () => {
+        console.log('SERVER STARTED ON PORT 4000');
+    });
+}
+
+start().catch((err) => {
+    console.error(err);
 });
