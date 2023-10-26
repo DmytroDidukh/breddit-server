@@ -15,7 +15,8 @@
     "lint:ts": "eslint src/**/*.ts --fix",
     "check-ts": "tsc --noEmit",
     "prettier:write": "prettier --write src/**/*.ts",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "migration": "npx mikro-orm migration:create"
   },
   "mikro-orm": {
     "useTsNode": true,
