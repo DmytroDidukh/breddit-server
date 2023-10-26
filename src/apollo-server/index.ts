@@ -1,6 +1,7 @@
 import { ApolloServer, BaseContext } from '@apollo/server';
 import 'reflect-metadata'; // We need it before type-graphql
 import { buildSchema } from 'type-graphql';
+import { Container } from 'typedi';
 
 import { PostResolver } from '../resolvers';
 
@@ -10,6 +11,7 @@ async function setupApolloServer(): Promise<ApolloServer<BaseContext>> {
             schema: await buildSchema({
                 resolvers: [PostResolver],
                 validate: false,
+                container: Container,
             }),
         });
 

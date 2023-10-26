@@ -1,8 +1,10 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, Int, ObjectType } from 'type-graphql';
 
+import { PostRepository } from '../repositories';
+
 @ObjectType()
-@Entity()
+@Entity({ customRepository: () => PostRepository })
 export class Post {
     @Field(() => Int)
     @PrimaryKey()

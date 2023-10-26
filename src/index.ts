@@ -5,7 +5,7 @@ import express, { Express } from 'express';
 import { setupApolloServer } from './apollo-server';
 import { setupDatabase } from './db';
 
-async function start() {
+async function bootstrap() {
     const app: Express = express();
 
     const apolloServer = await setupApolloServer();
@@ -25,6 +25,6 @@ async function start() {
     });
 }
 
-start().catch((err) => {
+bootstrap().catch((err) => {
     console.error(err);
 });
