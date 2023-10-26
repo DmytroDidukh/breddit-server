@@ -11,4 +11,8 @@ export class PostService {
     async getAll(): Promise<Post[]> {
         return this.postRepository.find({});
     }
+
+    async getOneById(id: number): Promise<Post | null> {
+        return this.postRepository.findOne({ id });
+    }
 }
