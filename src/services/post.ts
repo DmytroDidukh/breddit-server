@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, wrap } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
 import { Post } from '../entities/Post';
@@ -26,4 +26,35 @@ export class PostService {
 
         return post;
     }
+
+    async update(id: number, title: string): Promise<Post | null> {
+        const post = await this.getOneById(id);
+        console.log(post);
+        if (!post) {
+            // TODO: Handle NOT FOUND
+            return null;
+        }
+        console.log('NEXT');
+        const updatedPost = wrap(post).assign({ title }, { mergeObjects: true });
+        await this.em.persistAndFlush(updatedPost);
+
+        return updatedPost;
+    }
+
+    async delete(id: number): Promise<boolean> {
+        const post = await this.getOneById(id);
+
+        if (!post) {
+            // TODO: Handle NOT FOUND
+            return false;
+        }
+        console.log('NEXT');
+        await this.postRepository.nativeDelete({ id });
+
+        return true;
+    }
+
+    // private getReference(id: number): Post {
+    //     return this.postRepository.getReference(id);
+    // }
 }

@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
 import { Post } from '../entities/Post';
@@ -23,5 +23,18 @@ export class PostResolver {
     @Mutation(() => Post)
     createPost(@Arg('title') title: string): Promise<Post> {
         return this.postService.create(title);
+    }
+
+    @Mutation(() => Post, { nullable: true })
+    updatePost(
+        @Arg('id', () => Int) id: number,
+        @Arg('title') title: string,
+    ): Promise<Post | null> {
+        return this.postService.update(id, title);
+    }
+
+    @Mutation(() => Boolean)
+    deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
+        return this.postService.delete(id);
     }
 }
