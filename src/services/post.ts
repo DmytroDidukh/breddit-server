@@ -29,12 +29,12 @@ export class PostService {
 
     async update(id: number, title: string): Promise<Post | null> {
         const post = await this.getOneById(id);
-        console.log(post);
+
         if (!post) {
             // TODO: Handle NOT FOUND
             return null;
         }
-        console.log('NEXT');
+
         const updatedPost = wrap(post).assign({ title }, { mergeObjects: true });
         await this.em.persistAndFlush(updatedPost);
 
@@ -48,7 +48,7 @@ export class PostService {
             // TODO: Handle NOT FOUND
             return false;
         }
-        console.log('NEXT');
+
         await this.postRepository.nativeDelete({ id });
 
         return true;

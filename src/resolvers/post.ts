@@ -1,8 +1,8 @@
 import { Arg, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
-import { Post } from '../entities/Post';
-import { PostService } from '../services/post';
+import { Post } from '../entities';
+import { PostService } from '../services';
 
 @Service()
 @Resolver()
