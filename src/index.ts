@@ -2,8 +2,8 @@ import { expressMiddleware } from '@apollo/server/express4';
 import cors from 'cors';
 import express, { Express } from 'express';
 
-import { setupApolloServer } from './apollo-server';
 import { setupDatabase } from './db';
+import { setupApolloServer } from './loaders/apollo-server';
 
 async function bootstrap() {
     const app: Express = express();

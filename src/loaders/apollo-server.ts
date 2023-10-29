@@ -3,13 +3,13 @@ import 'reflect-metadata'; // We need it before type-graphql
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 
-import { PostResolver } from '../resolvers';
+import { AuthResolver, PostResolver } from '../resolvers';
 
 async function setupApolloServer(): Promise<ApolloServer<BaseContext>> {
     try {
         const apolloServer = new ApolloServer({
             schema: await buildSchema({
-                resolvers: [PostResolver],
+                resolvers: [PostResolver, AuthResolver],
                 validate: false,
                 container: Container,
             }),

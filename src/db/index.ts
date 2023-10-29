@@ -1,9 +1,9 @@
 import { EntityManager, IDatabaseDriver, MikroORM } from '@mikro-orm/core';
 import { Container } from 'typedi';
 
-import { Post } from '../entities/Post';
+import { Post, User } from '../entities';
 import mikroOrmConfig from '../mikro-orm.config';
-import { PostRepository } from '../repositories';
+import { PostRepository, UserRepository } from '../repositories';
 
 async function setupDatabase(): Promise<MikroORM<IDatabaseDriver>> {
     try {
@@ -14,6 +14,7 @@ async function setupDatabase(): Promise<MikroORM<IDatabaseDriver>> {
 
         Container.set(EntityManager, orm.em);
         Container.set(PostRepository, orm.em.getRepository(Post));
+        Container.set(UserRepository, orm.em.getRepository(User));
 
         return orm;
     } catch (error) {
