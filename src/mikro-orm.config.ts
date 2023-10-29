@@ -3,7 +3,7 @@ import path from 'path';
 import { MikroORM } from '@mikro-orm/core';
 
 import { __prod__ } from './constants';
-import { Post } from './entities/Post';
+import { Post, User } from './entities';
 
 export default {
     migrations: {
@@ -11,7 +11,7 @@ export default {
         pattern: /^[\w-]+\d+\.[tj]s$/,
     },
     allowGlobalContext: true,
-    entities: [Post],
+    entities: [Post, User],
     dbName: 'breddit',
     user: 'postgres',
     password: '875621',
