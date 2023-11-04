@@ -10,7 +10,7 @@ async function setupApolloServer(): Promise<ApolloServer<BaseContext>> {
         const apolloServer = new ApolloServer({
             schema: await buildSchema({
                 resolvers: [PostResolver, AuthResolver],
-                validate: false,
+                validate: true,
                 container: Container,
             }),
         });

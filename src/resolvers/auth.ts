@@ -1,19 +1,9 @@
-import { Arg, Field, InputType, Mutation, Resolver } from 'type-graphql';
+import { Arg, Mutation, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
-import { User } from '../entities';
+import { SignInInput, SignUpInput } from '../graphql/inputs';
+import { AuthResponse } from '../graphql/types';
 import { AuthService } from '../services';
-
-@InputType()
-class UserInput {
-    @Field()
-    // TODO: Add validation
-    username!: string;
-
-    @Field()
-    // TODO: Add validation
-    password!: string;
-}
 
 @Service()
 @Resolver()
@@ -21,8 +11,13 @@ export class AuthResolver {
     @Inject()
     private readonly authService!: AuthService;
 
-    @Mutation(() => User)
-    registerUser(@Arg('user') { username, password }: UserInput): Promise<User> {
-        return this.authService.registerUser(username, password);
+    @Mutation(() => AuthResponse)
+    signUp(@Arg('user') { username, password }: SignUpInput): Promise<AuthResponse> {
+        return this.authService.signUp(username, password);
+    }
+
+    @Mutation(() => AuthResponse)
+    signIn(@Arg('user') { username, password }: SignInInput): Promise<AuthResponse> {
+        return this.authService.signIn(username, password);
     }
 }
