@@ -3,14 +3,14 @@ import { Inject, Service } from 'typedi';
 
 import { UserService } from './user';
 
-import { AuthResponse, FieldError } from '../graphql/types';
+import { FieldError, SignInResponse, SignUpResponse, UnauthorizedError } from '../graphql/types';
 
 @Service()
 export class AuthService {
     @Inject()
     private readonly userService!: UserService;
 
-    async signUp(username: string, password: string): Promise<AuthResponse> {
+    async signUp(username: string, password: string): Promise<SignUpResponse> {
         const user = await this.userService.getOneByUsername(username);
 
         if (user) {
@@ -24,20 +24,20 @@ export class AuthService {
         return { user: await this.userService.create(username, hashedPassword) };
     }
 
-    async signIn(username: string, password: string): Promise<AuthResponse> {
+    async signIn(username: string, password: string): Promise<SignInResponse> {
         const user = await this.userService.getOneByUsername(username);
 
         if (!user) {
             return {
-                errors: [new FieldError('username', 'Invalid credentials')],
+                errors: [new UnauthorizedError('Invalid credentials')],
             };
         }
 
-        const isPasswordMatch = await this.verifyPassword(password, user.password);
+        const isPasswordValid = await this.verifyPassword(password, user.password);
 
-        if (!isPasswordMatch) {
+        if (!isPasswordValid) {
             return {
-                errors: [new FieldError('password', 'Invalid credentials')],
+                errors: [new UnauthorizedError('Invalid credentials')],
             };
         }
 

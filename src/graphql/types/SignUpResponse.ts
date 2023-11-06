@@ -5,7 +5,7 @@ import { FieldError } from './FieldError';
 import { User } from '../../entities';
 
 @ObjectType()
-export class AuthResponse {
+export class SignUpResponse {
     @Field(() => User, { nullable: true })
     user?: User;
 

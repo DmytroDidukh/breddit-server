@@ -1,2 +1,4 @@
 export * from './FieldError';
-export * from './AuthResponse';
+export * from './SignUpResponse';
+export * from './SignInResponse';
+export * from './UnauthorizedError';
