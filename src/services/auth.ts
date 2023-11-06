@@ -15,7 +15,7 @@ export class AuthService {
 
         if (user) {
             return {
-                errors: [new FieldError('username', 'Username already exists')],
+                errors: [new FieldError('username', 'Username already taken')],
             };
         }
 
