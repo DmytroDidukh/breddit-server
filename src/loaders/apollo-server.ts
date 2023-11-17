@@ -1,18 +1,20 @@
-import { ApolloServer, BaseContext } from '@apollo/server';
+import { ApolloServer } from '@apollo/server';
 import 'reflect-metadata'; // We need it before type-graphql
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 
+import { MyContext } from '../context';
 import { AuthResolver, PostResolver } from '../resolvers';
 
-async function setupApolloServer(): Promise<ApolloServer<BaseContext>> {
+async function setupApolloServer(): Promise<ApolloServer<MyContext>> {
     try {
-        const apolloServer = new ApolloServer({
+        const apolloServer = new ApolloServer<MyContext>({
             schema: await buildSchema({
                 resolvers: [PostResolver, AuthResolver],
                 validate: true,
                 container: Container,
             }),
+            // context: ({ req, res }: ReqRes) => ({ em, req, res }),
         });
 
         await apolloServer.start();

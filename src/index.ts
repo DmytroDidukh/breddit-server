@@ -1,34 +1,33 @@
 import { expressMiddleware } from '@apollo/server/express4';
-import RedisStore from 'connect-redis';
 import cors from 'cors';
 import express, { Express } from 'express';
 import session from 'express-session';
-import { createClient } from 'redis';
 
+import { __prod__ } from './constants';
 import { setupDatabase } from './db';
 import { setupApolloServer } from './loaders/apollo-server';
+import { setupRedisStore } from './loaders/redis-store';
 
 async function bootstrap() {
     const app: Express = express();
-
-    const redisClient = createClient();
-    redisClient.connect().catch(console.error);
-    const redisStore = new RedisStore({ client: redisClient });
+    const redisStore = setupRedisStore();
 
     const sessionMiddleware = session({
+        name: 'qid',
         store: redisStore,
-        secret: 'yourSecret', // Use a random secret for production
+        secret: 'ytjghj5yy654tkjhnkfxcfewrtwe',
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: 'auto', // If true the cookie will only be sent over HTTPS, which is recommended
-            httpOnly: true, // If true the cookie will only be available to the web server
-            maxAge: 1000 * 60 * 60 * 24, // Cookie expiry, which is one day here
+            secure: __prod__, // cookie only works in https
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24,
+            sameSite: 'lax', // csrf
         },
     });
 
-    const apolloServer = await setupApolloServer();
     const orm = await setupDatabase();
+    const apolloServer = await setupApolloServer();
 
     app.use(sessionMiddleware);
     app.use(
@@ -36,7 +35,7 @@ async function bootstrap() {
         cors<cors.CorsRequest>(),
         express.json(),
         expressMiddleware(apolloServer, {
-            context: async () => ({ em: orm.em }),
+            context: async ({ req, res }) => ({ em: orm.em, req, res }),
         }),
     );
 
