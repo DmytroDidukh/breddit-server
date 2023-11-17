@@ -22,7 +22,7 @@ async function bootstrap() {
             secure: __prod__, // cookie only works in https
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24,
-            sameSite: 'lax', // csrf
+            sameSite: 'lax',
         },
     });
 
@@ -32,7 +32,10 @@ async function bootstrap() {
     app.use(sessionMiddleware);
     app.use(
         '/graphql',
-        cors<cors.CorsRequest>(),
+        cors<cors.CorsRequest>({
+            // origin: ['https://sandbox.embed.apollographql.com'],
+            // credentials: true,
+        }),
         express.json(),
         expressMiddleware(apolloServer, {
             context: async ({ req, res }) => ({ em: orm.em, req, res }),

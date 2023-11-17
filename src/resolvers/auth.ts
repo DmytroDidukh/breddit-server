@@ -1,6 +1,7 @@
-import { Arg, Mutation, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
+import { MyContext } from '../context';
 import { SignInInput, SignUpInput } from '../graphql/inputs';
 import { SignInResponse, SignUpResponse } from '../graphql/types';
 import { AuthService } from '../services';
@@ -17,7 +18,15 @@ export class AuthResolver {
     }
 
     @Mutation(() => SignInResponse)
-    signIn(@Arg('user') { username, password }: SignInInput): Promise<SignInResponse> {
-        return this.authService.signIn(username, password);
+    async signIn(
+        @Arg('user') { username, password }: SignInInput,
+        @Ctx() ctx: MyContext,
+    ): Promise<SignInResponse> {
+        const response = await this.authService.signIn(username, password);
+
+        // Store the user's ID in the session.
+        ctx.req.session!.userId = response.user?.id;
+
+        return response;
     }
 }
