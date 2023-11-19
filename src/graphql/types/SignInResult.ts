@@ -5,7 +5,7 @@ import { UnauthorizedError } from './UnauthorizedError';
 import { User } from '../../entities';
 
 @ObjectType()
-export class SignInResponse {
+export class SignInResult {
     @Field(() => User, { nullable: true })
     user?: User;
 

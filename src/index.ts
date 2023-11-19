@@ -13,7 +13,7 @@ async function bootstrap() {
     const redisStore = setupRedisStore();
 
     const sessionMiddleware = session({
-        name: 'qid',
+        name: 'breddid_session_id',
         store: redisStore,
         secret: 'ytjghj5yy654tkjhnkfxcfewrtwe',
         resave: false,
@@ -21,7 +21,7 @@ async function bootstrap() {
         cookie: {
             secure: __prod__, // cookie only works in https
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24,
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
             sameSite: 'lax',
         },
     });

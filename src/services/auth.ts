@@ -3,14 +3,14 @@ import { Inject, Service } from 'typedi';
 
 import { UserService } from './user';
 
-import { FieldError, SignInResponse, SignUpResponse, UnauthorizedError } from '../graphql/types';
+import { FieldError, SignInResult, SignUpResult, UnauthorizedError } from '../graphql/types';
 
 @Service()
 export class AuthService {
     @Inject()
     private readonly userService!: UserService;
 
-    async signUp(username: string, password: string): Promise<SignUpResponse> {
+    async signUp(username: string, password: string): Promise<SignUpResult> {
         const user = await this.userService.getOneByUsername(username);
 
         if (user) {
@@ -24,7 +24,7 @@ export class AuthService {
         return { user: await this.userService.create(username, hashedPassword) };
     }
 
-    async signIn(username: string, password: string): Promise<SignInResponse> {
+    async signIn(username: string, password: string): Promise<SignInResult> {
         const user = await this.userService.getOneByUsername(username);
 
         if (!user) {

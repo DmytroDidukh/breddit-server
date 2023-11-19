@@ -4,13 +4,13 @@ import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 
 import { MyContext } from '../context';
-import { AuthResolver, PostResolver } from '../resolvers';
+import { AuthResolver, PostResolver, UserResolver } from '../resolvers';
 
 async function setupApolloServer(): Promise<ApolloServer<MyContext>> {
     try {
         const apolloServer = new ApolloServer<MyContext>({
             schema: await buildSchema({
-                resolvers: [PostResolver, AuthResolver],
+                resolvers: [PostResolver, AuthResolver, UserResolver],
                 validate: true,
                 container: Container,
             }),

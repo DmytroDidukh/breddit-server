@@ -3,7 +3,7 @@ import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
 import { SignInInput, SignUpInput } from '../graphql/inputs';
-import { SignInResponse, SignUpResponse } from '../graphql/types';
+import { SignInResult, SignUpResult } from '../graphql/types';
 import { AuthService } from '../services';
 
 @Service()
@@ -12,21 +12,29 @@ export class AuthResolver {
     @Inject()
     private readonly authService!: AuthService;
 
-    @Mutation(() => SignUpResponse)
-    signUp(@Arg('user') { username, password }: SignUpInput): Promise<SignUpResponse> {
-        return this.authService.signUp(username, password);
+    @Mutation(() => SignUpResult)
+    async signUp(
+        @Arg('user') { username, password }: SignUpInput,
+        @Ctx() ctx: MyContext,
+    ): Promise<SignUpResult> {
+        const result = await this.authService.signUp(username, password);
+
+        // Store the user's ID in the session.
+        ctx.req.session!.userId = result.user?.id;
+
+        return result;
     }
 
-    @Mutation(() => SignInResponse)
+    @Mutation(() => SignInResult)
     async signIn(
         @Arg('user') { username, password }: SignInInput,
         @Ctx() ctx: MyContext,
-    ): Promise<SignInResponse> {
-        const response = await this.authService.signIn(username, password);
+    ): Promise<SignInResult> {
+        const result = await this.authService.signIn(username, password);
 
         // Store the user's ID in the session.
-        ctx.req.session!.userId = response.user?.id;
+        ctx.req.session!.userId = result.user?.id;
 
-        return response;
+        return result;
     }
 }
