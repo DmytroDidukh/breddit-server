@@ -1,4 +1,4 @@
-import { Ctx, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
@@ -14,5 +14,15 @@ export class UserResolver {
     @Query(() => User, { nullable: true })
     me(@Ctx() ctx: MyContext): Promise<User | null> {
         return this.userService.getOneById(ctx.req.session!.userId);
+    }
+
+    @Query(() => [User])
+    users(): Promise<User[]> {
+        return this.userService.getAll();
+    }
+
+    @Mutation(() => Boolean)
+    deleteUser(@Arg('id', () => Int) id: number): Promise<boolean> {
+        return this.userService.delete(id);
     }
 }
