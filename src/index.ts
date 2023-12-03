@@ -33,8 +33,8 @@ async function bootstrap() {
     app.use(
         '/graphql',
         cors<cors.CorsRequest>({
-            // origin: ['https://sandbox.embed.apollographql.com'],
-            // credentials: true,
+            origin: ['https://sandbox.embed.apollographql.com', 'http://localhost:3000'],
+            credentials: true,
         }),
         express.json(),
         expressMiddleware(apolloServer, {
