@@ -13,7 +13,7 @@ async function bootstrap() {
     const redisStore = setupRedisStore();
 
     const sessionMiddleware = session({
-        name: 'breddid_session_id',
+        name: 'breddit_session_id',
         store: redisStore,
         secret: 'ytjghj5yy654tkjhnkfxcfewrtwe',
         resave: false,
