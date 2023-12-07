@@ -1,4 +1,3 @@
-export * from './FieldError';
-export * from './SignUpResult';
-export * from './SignInResult';
-export * from './UnauthorizedError';
+export * from './errors';
+export * from './sign-up-result';
+export * from './sign-in-result';

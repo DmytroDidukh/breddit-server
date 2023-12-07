@@ -1,7 +1,8 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
-import { Post } from '../entities/Post';
+import { Post } from '../entities';
+import { NotFoundError } from '../graphql/types';
 import { PostRepository } from '../repositories';
 
 @Service()
@@ -27,12 +28,11 @@ export class PostService {
         return post;
     }
 
-    async update(id: number, title: string): Promise<Post | null> {
+    async update(id: number, title: string): Promise<Post> {
         const post = await this.getOneById(id);
 
         if (!post) {
-            // TODO: Handle NOT FOUND
-            return null;
+            throw new NotFoundError('Post', id);
         }
 
         const updatedPost = wrap(post).assign({ title }, { mergeObjects: true });
@@ -45,8 +45,7 @@ export class PostService {
         const post = await this.getOneById(id);
 
         if (!post) {
-            // TODO: Handle NOT FOUND
-            return false;
+            throw new NotFoundError('Post', id);
         }
 
         await this.postRepository.nativeDelete({ id });

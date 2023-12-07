@@ -1,2 +1,2 @@
-export * from './SignUpInput';
-export * from './SignInInput';
+export * from './sign-up-input';
+export * from './sign-in-input';

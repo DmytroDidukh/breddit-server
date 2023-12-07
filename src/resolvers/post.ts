@@ -26,10 +26,7 @@ export class PostResolver {
     }
 
     @Mutation(() => Post, { nullable: true })
-    updatePost(
-        @Arg('id', () => Int) id: number,
-        @Arg('title') title: string,
-    ): Promise<Post | null> {
+    updatePost(@Arg('id', () => Int) id: number, @Arg('title') title: string): Promise<Post> {
         return this.postService.update(id, title);
     }
 

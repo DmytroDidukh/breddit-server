@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
 import { User } from '../entities';
+import { NotFoundError } from '../graphql/types';
 import { UserRepository } from '../repositories';
 
 @Service()
@@ -35,8 +36,7 @@ export class UserService {
         const user = await this.getOneById(id);
 
         if (!user) {
-            // TODO: Handle NOT FOUND
-            return false;
+            throw new NotFoundError('User', id);
         }
 
         await this.userRepository.nativeDelete({ id });

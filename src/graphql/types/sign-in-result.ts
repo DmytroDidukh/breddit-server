@@ -1,6 +1,6 @@
 import { Field, ObjectType } from 'type-graphql';
 
-import { UnauthorizedError } from './UnauthorizedError';
+import { UnauthorizedError } from './errors';
 
 import { User } from '../../entities';
 
