@@ -1,12 +1,11 @@
 import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
-export class BaseError extends Error {
+export class BaseError {
     @Field()
     message: string;
 
     constructor(message: string) {
-        super(message);
         this.message = message;
     }
 }

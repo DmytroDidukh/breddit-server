@@ -20,6 +20,7 @@ async function setupApolloServer(): Promise<ApolloServer<MyContext>> {
             formatError: (formattedError) => {
                 return errorHandler.handleErrors(formattedError);
             },
+            includeStacktraceInErrorResponses: true,
         });
 
         await apolloServer.start();
