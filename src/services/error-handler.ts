@@ -1,4 +1,4 @@
-import { ApolloServerErrorCode } from '@apollo/server/src/errors';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
 import { GraphQLFormattedError } from 'graphql';
 
 import { ErrorCode } from '../consts';
