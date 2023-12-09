@@ -19,13 +19,21 @@ export class ErrorHandlerService {
     static extractCode(formattedError: GraphQLFormattedError): CombinedErrorCode {
         const code = formattedError.extensions?.code as CombinedErrorCode;
 
-        if (Object.values(ErrorCode).includes(code as ErrorCode)) {
+        if (ErrorHandlerService.isErrorCode(code)) {
             return code;
-        } else if (Object.values(ApolloServerErrorCode).includes(code as ApolloServerErrorCode)) {
+        } else if (ErrorHandlerService.isApolloServerErrorCode(code)) {
             return code;
         } else {
             return ErrorCode.UNKNOWN_ERROR;
         }
+    }
+
+    static isErrorCode(code: CombinedErrorCode): boolean {
+        return Object.values(ErrorCode).includes(code as ErrorCode);
+    }
+
+    static isApolloServerErrorCode(code: CombinedErrorCode): boolean {
+        return Object.values(ApolloServerErrorCode).includes(code as ApolloServerErrorCode);
     }
 
     static formatExtensions(
