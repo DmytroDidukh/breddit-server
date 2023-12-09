@@ -1,7 +1,6 @@
-enum ErrorCodes {
+export enum ErrorCode {
     NOT_FOUND = 'NOT_FOUND',
     UNAUTHORIZED = 'UNAUTHORIZED',
     VALIDATION_ERROR = 'VALIDATION_ERROR',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
-
-export { ErrorCodes };

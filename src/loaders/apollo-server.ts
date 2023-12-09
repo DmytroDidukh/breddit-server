@@ -3,6 +3,7 @@ import 'reflect-metadata'; // We need it before type-graphql
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 
+import { __prod__ } from '../constants';
 import { MyContext } from '../context';
 import { AuthResolver, PostResolver, UserResolver } from '../resolvers';
 import { ErrorHandlerService } from '../services';
@@ -20,7 +21,7 @@ async function setupApolloServer(): Promise<ApolloServer<MyContext>> {
             formatError: (formattedError) => {
                 return errorHandler.handleErrors(formattedError);
             },
-            includeStacktraceInErrorResponses: true,
+            includeStacktraceInErrorResponses: !__prod__,
         });
 
         await apolloServer.start();
