@@ -1,6 +1,6 @@
 import { Field, ObjectType } from 'type-graphql';
 
-import { UnauthorizedError } from './errors';
+import { AuthenticationError } from './errors';
 
 import { User } from '../../entities';
 
@@ -9,6 +9,6 @@ export class SignInResult {
     @Field(() => User, { nullable: true })
     user?: User;
 
-    @Field(() => [UnauthorizedError], { nullable: true })
-    errors?: UnauthorizedError[];
+    @Field(() => [AuthenticationError], { nullable: true })
+    errors?: AuthenticationError[];
 }

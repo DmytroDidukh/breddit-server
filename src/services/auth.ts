@@ -3,7 +3,7 @@ import { Inject, Service } from 'typedi';
 
 import { UserService } from './user';
 
-import { FieldError, SignInResult, SignUpResult, UnauthorizedError } from '../graphql/types';
+import { AuthenticationError, FieldError, SignInResult, SignUpResult } from '../graphql/types';
 
 @Service()
 export class AuthService {
@@ -29,7 +29,7 @@ export class AuthService {
 
         if (!user) {
             return {
-                errors: [new UnauthorizedError('Invalid credentials')],
+                errors: [new AuthenticationError('Invalid username or password')],
             };
         }
 
@@ -37,7 +37,7 @@ export class AuthService {
 
         if (!isPasswordValid) {
             return {
-                errors: [new UnauthorizedError('Invalid credentials')],
+                errors: [new AuthenticationError('Invalid username or password')],
             };
         }
 
