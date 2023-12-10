@@ -3,6 +3,7 @@ import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
 import { User } from '../entities';
+import { AuthorizationError } from '../graphql/types';
 import { UserService } from '../services';
 
 @Service()
@@ -13,6 +14,10 @@ export class UserResolver {
 
     @Query(() => User, { nullable: true })
     me(@Ctx() ctx: MyContext): Promise<User | null> {
+        const userId = ctx.req.session!.userId;
+        if (!userId) {
+            throw new AuthorizationError();
+        }
         return this.userService.getOneById(ctx.req.session!.userId);
     }
 
