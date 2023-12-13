@@ -1,6 +1,7 @@
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
+import { COOKIE_NAME } from '../constants';
 import { MyContext } from '../context';
 import { SignInInput, SignUpInput } from '../graphql/inputs';
 import { SignInResult, SignUpResult } from '../graphql/types';
@@ -47,5 +48,22 @@ export class AuthResolver {
         ctx.req.session!.userId = result.user?.id;
 
         return result;
+    }
+
+    @Mutation(() => Boolean)
+    async signOut(@Ctx() ctx: MyContext): Promise<boolean> {
+        return await new Promise(
+            (resolve) =>
+                ctx.req.session?.destroy((err) => {
+                    if (err) {
+                        console.error(err);
+                        resolve(false);
+                        return;
+                    }
+
+                    ctx.res.clearCookie(COOKIE_NAME);
+                    resolve(true);
+                }),
+        );
     }
 }

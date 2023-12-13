@@ -3,7 +3,7 @@ import cors from 'cors';
 import express, { Express } from 'express';
 import session from 'express-session';
 
-import { __prod__ } from './constants';
+import { __prod__, COOKIE_NAME } from './constants';
 import { setupDatabase } from './db';
 import { setupApolloServer } from './loaders/apollo-server';
 import { setupRedisStore } from './loaders/redis-store';
@@ -13,7 +13,7 @@ async function bootstrap() {
     const redisStore = setupRedisStore();
 
     const sessionMiddleware = session({
-        name: 'breddit_session_id',
+        name: COOKIE_NAME,
         store: redisStore,
         secret: 'ytjghj5yy654tkjhnkfxcfewrtwe',
         resave: false,
