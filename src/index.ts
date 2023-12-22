@@ -6,6 +6,7 @@ import session from 'express-session';
 import { __prod__, COOKIE_NAME } from './constants';
 import { setupDatabase } from './db';
 import { setupApolloServer } from './loaders/apollo-server';
+import { setupContainer } from './loaders/container';
 import { setupRedisStore } from './loaders/redis-store';
 
 async function bootstrap() {
@@ -27,6 +28,7 @@ async function bootstrap() {
     });
 
     const orm = await setupDatabase();
+    setupContainer(orm, redisStore);
     const apolloServer = await setupApolloServer();
 
     app.use(sessionMiddleware);
@@ -38,7 +40,7 @@ async function bootstrap() {
         }),
         express.json(),
         expressMiddleware(apolloServer, {
-            context: async ({ req, res }) => ({ em: orm.em, req, res }),
+            context: async ({ req, res }) => ({ em: orm.em, req, res, redis: redisStore }),
         }),
     );
 
