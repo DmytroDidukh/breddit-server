@@ -17,8 +17,8 @@ export class UserService {
         return this.userRepository.find({});
     }
 
-    async create(username: string, hashedPassword: string): Promise<User> {
-        const user = this.userRepository.create({ username, password: hashedPassword });
+    async create(username: string, hashedPassword: string, email: string): Promise<User> {
+        const user = this.userRepository.create({ username, password: hashedPassword, email });
         await this.em.persistAndFlush(user);
 
         return user;
@@ -30,6 +30,10 @@ export class UserService {
 
     async getOneById(id: number): Promise<User | null> {
         return await this.userRepository.findOne({ id });
+    }
+
+    async getOneByEmail(email: string): Promise<User | null> {
+        return await this.userRepository.findOne({ email });
     }
 
     async delete(id: number): Promise<boolean> {

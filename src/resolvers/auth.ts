@@ -17,19 +17,20 @@ export class AuthResolver {
 
     @Mutation(() => SignUpResult)
     async signUp(
-        @Arg('user') { username, password }: SignUpInput,
+        @Arg('user') { username, password, email }: SignUpInput,
         @Ctx() ctx: MyContext,
     ): Promise<SignUpResult> {
         const validationResult = await this.validationService.validateSignUpInput({
             username,
             password,
+            email,
         });
 
         if (validationResult.errors && validationResult.errors.length > 0) {
             return validationResult;
         }
 
-        const result = await this.authService.signUp(username, password);
+        const result = await this.authService.signUp(username, password, email);
 
         // Store the user's ID in the session.
         ctx.req.session!.userId = result.user?.id;

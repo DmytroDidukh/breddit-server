@@ -4,24 +4,31 @@ import { Inject, Service } from 'typedi';
 import { UserService } from './user';
 
 import { AuthenticationError, FieldError, SignInResult, SignUpResult } from '../graphql/types';
+import { AuthenticationError, FieldError, SignInResult, SignUpResult } from '../graphql/types';
 
 @Service()
 export class AuthService {
     @Inject()
     private readonly userService!: UserService;
 
-    async signUp(username: string, password: string): Promise<SignUpResult> {
+    async signUp(username: string, password: string, email: string): Promise<SignUpResult> {
         const user = await this.userService.getOneByUsername(username);
-
         if (user) {
             return {
                 errors: [new FieldError('username', 'Username already taken')],
             };
         }
 
+        const userByEmail = await this.userService.getOneByEmail(email);
+        if (userByEmail) {
+            return {
+                errors: [new FieldError('email', 'Email already taken')],
+            };
+        }
+
         const hashedPassword = await this.hashPassword(password);
 
-        return { user: await this.userService.create(username, hashedPassword) };
+        return { user: await this.userService.create(username, hashedPassword, email) };
     }
 
     async signIn(username: string, password: string): Promise<SignInResult> {
