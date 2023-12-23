@@ -65,8 +65,8 @@ export class AuthService {
             return true;
         }
 
-        const token = this.createToken(FORGET_PASSWORD_PREFIX);
-        await this.redis.set(token, user.id);
+        const token = this.createToken();
+        await this.redis.set(FORGET_PASSWORD_PREFIX + token, user.id);
 
         const html = this.createForgotPasswordHtml(token);
         await MailerService.sendEmail(email, html);
@@ -101,16 +101,11 @@ export class AuthService {
     }
 
     private createForgotPasswordHtml(token: string): string {
-        const extractedToken = this.extractToken(token, FORGET_PASSWORD_PREFIX);
-        return `<a href="http://localhost:3000/change-password/${extractedToken}">Reset password</a>`;
+        return `<a href="http://localhost:3000/change-password/${token}">Reset password</a>`;
     }
 
-    private createToken(prefix: string): string {
-        return prefix + v4();
-    }
-
-    private extractToken(token: string, prefix: string): string {
-        return token.replace(prefix, '');
+    private createToken(): string {
+        return v4();
     }
 
     private async hashPassword(password: string): Promise<string> {
