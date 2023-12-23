@@ -1,13 +1,32 @@
 import { validate, ValidationError } from 'class-validator';
 import { Service } from 'typedi';
 
-import { SignUpInput } from '../graphql/inputs';
+import { ChangePasswordInput, SignUpInput } from '../graphql/inputs';
 import { FieldError, SignUpResult } from '../graphql/types';
+import { ChangePasswordResult } from '../graphql/types/change-password-result';
 
 @Service()
 export class ValidationService {
     public async validateSignUpInput(input: SignUpInput): Promise<SignUpResult> {
         const validationInput = new SignUpInput();
+        Object.assign(validationInput, input);
+
+        const error = await this.validateInput(validationInput);
+
+        if (error) {
+            const formattedErrors = this.formatValidationError(error);
+            return {
+                errors: formattedErrors,
+            };
+        }
+
+        return {};
+    }
+
+    public async validateChangePasswordInput(
+        input: ChangePasswordInput,
+    ): Promise<ChangePasswordResult> {
+        const validationInput = new ChangePasswordInput();
         Object.assign(validationInput, input);
 
         const error = await this.validateInput(validationInput);

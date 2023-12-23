@@ -3,8 +3,9 @@ import { Inject, Service } from 'typedi';
 
 import { COOKIE_NAME } from '../constants';
 import { MyContext } from '../context';
-import { SignInInput, SignUpInput } from '../graphql/inputs';
+import { ChangePasswordInput, SignInInput, SignUpInput } from '../graphql/inputs';
 import { SignInResult, SignUpResult } from '../graphql/types';
+import { ChangePasswordResult } from '../graphql/types/change-password-result';
 import { AuthService, ValidationService } from '../services';
 
 @Service()
@@ -71,5 +72,21 @@ export class AuthResolver {
     @Mutation(() => Boolean)
     async forgotPassword(@Arg('email') email: string): Promise<boolean> {
         return await this.authService.forgotPassword(email);
+    }
+
+    @Mutation(() => ChangePasswordResult)
+    async changePassword(
+        @Arg('options') { password, token }: ChangePasswordInput,
+    ): Promise<ChangePasswordResult> {
+        const validationResult = await this.validationService.validateChangePasswordInput({
+            password,
+            token,
+        });
+
+        if (validationResult.errors && validationResult.errors.length > 0) {
+            return validationResult;
+        }
+
+        return await this.authService.changePassword(password, token);
     }
 }
