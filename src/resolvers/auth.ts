@@ -77,6 +77,7 @@ export class AuthResolver {
     @Mutation(() => ChangePasswordResult)
     async changePassword(
         @Arg('options') { password, token }: ChangePasswordInput,
+        @Ctx() ctx: MyContext,
     ): Promise<ChangePasswordResult> {
         const validationResult = await this.validationService.validateChangePasswordInput({
             password,
@@ -87,6 +88,11 @@ export class AuthResolver {
             return validationResult;
         }
 
-        return await this.authService.changePassword(password, token);
+        const result = await this.authService.changePassword(password, token);
+
+        // Store the user's ID in the session.
+        ctx.req.session!.userId = result.user?.id;
+
+        return result;
     }
 }
