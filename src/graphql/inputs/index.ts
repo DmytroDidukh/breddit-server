@@ -1,2 +1,3 @@
-export * from './sign-up-input';
-export * from './sign-in-input';
+export * from './sign-up';
+export * from './sign-in';
+export * from './change-password';
