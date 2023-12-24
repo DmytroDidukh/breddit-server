@@ -8,10 +8,10 @@ export abstract class BaseEntity {
     id!: number;
 
     @Field()
-    @Property({ type: 'date', default: 'now()' })
+    @Property({ type: 'date', onCreate: () => new Date() })
     createdAt?: Date;
 
     @Field()
-    @Property({ type: 'date', default: 'now()', onUpdate: () => new Date() })
+    @Property({ type: 'date', onCreate: () => new Date(), onUpdate: () => new Date() })
     updatedAt?: Date;
 }
