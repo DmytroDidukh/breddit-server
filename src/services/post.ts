@@ -1,6 +1,8 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
+import { UserService } from './user';
+
 import { Post } from '../entities';
 import { NotFoundError } from '../graphql/types';
 import { PostRepository } from '../repositories';
@@ -9,6 +11,9 @@ import { PostRepository } from '../repositories';
 export class PostService {
     @Inject()
     private readonly postRepository!: PostRepository;
+
+    @Inject()
+    private readonly userService!: UserService;
 
     @Inject()
     private readonly em!: EntityManager;
@@ -21,8 +26,14 @@ export class PostService {
         return this.postRepository.findOne({ id });
     }
 
-    async create(title: string): Promise<Post> {
-        const post = this.postRepository.create({ title });
+    async create(title: string, authorId: number): Promise<Post> {
+        const author = await this.userService.getOneById(authorId);
+
+        if (!author) {
+            throw new NotFoundError('User', authorId);
+        }
+
+        const post = this.postRepository.create({ title, author });
         await this.em.persistAndFlush(post);
 
         return post;
@@ -52,8 +63,4 @@ export class PostService {
 
         return true;
     }
-
-    // private getReference(id: number): Post {
-    //     return this.postRepository.getReference(id);
-    // }
 }

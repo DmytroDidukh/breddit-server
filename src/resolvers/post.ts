@@ -21,8 +21,8 @@ export class PostResolver {
     }
 
     @Mutation(() => Post)
-    createPost(@Arg('title') title: string): Promise<Post> {
-        return this.postService.create(title);
+    createPost(@Arg('title') title: string, @Arg('authorId') authorId: number): Promise<Post> {
+        return this.postService.create(title, authorId);
     }
 
     @Mutation(() => Post, { nullable: true })
