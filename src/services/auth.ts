@@ -95,6 +95,8 @@ export class AuthService {
         const user = await this.userService.getOneById(userId);
         const hashedPassword = await this.hashPassword(password);
 
+        await this.redis.destroy(FORGET_PASSWORD_PREFIX + token);
+
         return {
             user: await this.userService.update(user!.id, { password: hashedPassword }),
         };
