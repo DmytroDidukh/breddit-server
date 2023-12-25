@@ -1,7 +1,9 @@
-import { Arg, Int, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
+import { MyContext } from '../context';
 import { Post } from '../entities';
+import { AuthorizationMiddleware } from '../middlewares';
 import { PostService } from '../services';
 
 @Service()
@@ -21,8 +23,9 @@ export class PostResolver {
     }
 
     @Mutation(() => Post)
-    createPost(@Arg('title') title: string, @Arg('authorId') authorId: number): Promise<Post> {
-        return this.postService.create(title, authorId);
+    @UseMiddleware(AuthorizationMiddleware)
+    createPost(@Arg('title') title: string, @Ctx() ctx: MyContext): Promise<Post> {
+        return this.postService.create(title, ctx.req.session!.userId);
     }
 
     @Mutation(() => Post, { nullable: true })
