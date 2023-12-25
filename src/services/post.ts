@@ -59,7 +59,7 @@ export class PostService {
             throw new NotFoundError('Post', id);
         }
 
-        await this.postRepository.nativeDelete({ id });
+        await this.em.remove(post).flush();
 
         return true;
     }

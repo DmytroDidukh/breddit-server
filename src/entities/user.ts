@@ -1,7 +1,8 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core';
 import { Field, ObjectType } from 'type-graphql';
 
 import { BaseEntity } from './base-entity';
+import { Post } from './post';
 
 import { UserRepository } from '../repositories';
 
@@ -18,4 +19,8 @@ export class User extends BaseEntity {
     @Field()
     @Property({ type: 'text', unique: true })
     email!: string;
+
+    @Field(() => [Post], { nullable: false, defaultValue: [] })
+    @OneToMany(() => Post, (post) => post.author, { orphanRemoval: true })
+    posts = new Collection<Post>(this);
 }

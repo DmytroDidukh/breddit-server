@@ -56,7 +56,7 @@ export class UserService {
             throw new NotFoundError('User', id);
         }
 
-        await this.userRepository.nativeDelete({ id });
+        await this.em.remove(user).flush();
 
         return true;
     }

@@ -27,7 +27,11 @@ export class UserResolver {
     }
 
     @Mutation(() => Boolean)
-    deleteUser(@Arg('id', () => Int) id: number): Promise<boolean> {
-        return this.userService.delete(id);
+    async deleteUser(@Arg('id', () => Int) id: number, @Ctx() ctx: MyContext): Promise<boolean> {
+        const result = await this.userService.delete(id);
+
+        ctx.req.session!.destroy(() => {});
+
+        return result;
     }
 }
