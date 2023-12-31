@@ -28,12 +28,18 @@ export class PostService {
         return this.postRepository.findOne({ id });
     }
 
-    async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
-        const author = await this.userService.getOneById(authorId);
+    async getOneByIdOrFail(id: number): Promise<Post> {
+        const post = await this.postRepository.findOne({ id });
 
-        if (!author) {
-            throw new NotFoundError('User', authorId);
+        if (!post) {
+            throw new NotFoundError('Post', id);
         }
+
+        return post;
+    }
+
+    async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
+        const author = await this.userService.getOneByIdOrFail(authorId);
 
         const post = this.postRepository.create({ ...postInput, author });
         await this.em.persistAndFlush(post);
@@ -46,11 +52,7 @@ export class PostService {
         postInput: UpdatePostInput,
         userId: number,
     ): Promise<UpdatePostResult> {
-        const post = await this.getOneById(id);
-
-        if (!post) {
-            throw new NotFoundError('Post', id);
-        }
+        const post = await this.getOneByIdOrFail(id);
 
         if (post.author.id !== userId) {
             throw new AuthorizationError('You have no permission to update this post.');
@@ -71,11 +73,7 @@ export class PostService {
     }
 
     async delete(id: number): Promise<boolean> {
-        const post = await this.getOneById(id);
-
-        if (!post) {
-            throw new NotFoundError('Post', id);
-        }
+        const post = await this.getOneByIdOrFail(id);
 
         await this.em.remove(post).flush();
 

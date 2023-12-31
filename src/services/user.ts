@@ -32,16 +32,22 @@ export class UserService {
         return await this.userRepository.findOne({ id });
     }
 
+    async getOneByIdOrFail(id: number): Promise<User> {
+        const user = await this.userRepository.findOne({ id });
+
+        if (!user) {
+            throw new NotFoundError('User', id);
+        }
+
+        return user;
+    }
+
     async getOneByEmail(email: string): Promise<User | null> {
         return await this.userRepository.findOne({ email });
     }
 
     async update(id: number, data: Partial<User>): Promise<User> {
-        const user = await this.getOneById(id);
-
-        if (!user) {
-            throw new NotFoundError('User', id);
-        }
+        const user = await this.getOneByIdOrFail(id);
 
         const updatedUser = wrap(user).assign(data, { mergeObjects: true });
         await this.em.persistAndFlush(updatedUser);
@@ -50,11 +56,7 @@ export class UserService {
     }
 
     async delete(id: number): Promise<boolean> {
-        const user = await this.getOneById(id);
-
-        if (!user) {
-            throw new NotFoundError('User', id);
-        }
+        const user = await this.getOneByIdOrFail(id);
 
         await this.em.remove(user).flush();
 
