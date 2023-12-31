@@ -33,13 +33,18 @@ export class PostResolver {
         @Arg('post') { title, content }: CreatePostInput,
         @Ctx() ctx: MyContext,
     ): Promise<CreatePostResult> {
-        const validationResult = await this.validationService.validateCreatePostInput({
-            title,
-            content,
-        });
+        const validationResult = await this.validationService.validateInput<CreatePostInput>(
+            CreatePostInput,
+            {
+                title,
+                content,
+            },
+        );
 
-        if (validationResult.errors && validationResult.errors.length > 0) {
-            return validationResult;
+        if (validationResult) {
+            return {
+                errors: validationResult,
+            };
         }
 
         return this.postService.create(title, content, ctx.req.session!.userId);
@@ -51,13 +56,18 @@ export class PostResolver {
         @Arg('id', () => Int) id: number,
         @Arg('post') { title, content }: UpdatePostInput,
     ): Promise<UpdatePostResult> {
-        const validationResult = await this.validationService.validateUpdatePostInput({
-            title,
-            content,
-        });
+        const validationResult = await this.validationService.validateInput<UpdatePostInput>(
+            UpdatePostInput,
+            {
+                title,
+                content,
+            },
+        );
 
-        if (validationResult.errors && validationResult.errors.length > 0) {
-            return validationResult;
+        if (validationResult) {
+            return {
+                errors: validationResult,
+            };
         }
 
         return this.postService.update(id, title, content);

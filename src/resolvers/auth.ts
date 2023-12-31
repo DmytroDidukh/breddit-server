@@ -20,14 +20,19 @@ export class AuthResolver {
         @Arg('user') { username, password, email }: SignUpInput,
         @Ctx() ctx: MyContext,
     ): Promise<SignUpResult> {
-        const validationResult = await this.validationService.validateSignUpInput({
-            username,
-            password,
-            email,
-        });
+        const validationResult = await this.validationService.validateInput<SignUpInput>(
+            SignUpInput,
+            {
+                username,
+                password,
+                email,
+            },
+        );
 
-        if (validationResult.errors && validationResult.errors.length > 0) {
-            return validationResult;
+        if (validationResult) {
+            return {
+                errors: validationResult,
+            };
         }
 
         const result = await this.authService.signUp(username, password, email);
@@ -78,13 +83,18 @@ export class AuthResolver {
         @Arg('options') { password, token }: ChangePasswordInput,
         @Ctx() ctx: MyContext,
     ): Promise<ChangePasswordResult> {
-        const validationResult = await this.validationService.validateChangePasswordInput({
-            password,
-            token,
-        });
+        const validationResult = await this.validationService.validateInput<ChangePasswordInput>(
+            ChangePasswordInput,
+            {
+                password,
+                token,
+            },
+        );
 
-        if (validationResult.errors && validationResult.errors.length > 0) {
-            return validationResult;
+        if (validationResult) {
+            return {
+                errors: validationResult,
+            };
         }
 
         const result = await this.authService.changePassword(password, token);
