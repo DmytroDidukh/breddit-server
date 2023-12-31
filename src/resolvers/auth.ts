@@ -4,8 +4,7 @@ import { Inject, Service } from 'typedi';
 import { COOKIE_NAME } from '../constants';
 import { MyContext } from '../context';
 import { ChangePasswordInput, SignInInput, SignUpInput } from '../graphql/inputs';
-import { SignInResult, SignUpResult } from '../graphql/types';
-import { ChangePasswordResult } from '../graphql/types/change-password-result';
+import { ChangePasswordResult, SignInResult, SignUpResult } from '../graphql/results';
 import { AuthService, ValidationService } from '../services';
 
 @Service()

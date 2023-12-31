@@ -3,14 +3,19 @@ import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
 import { Post } from '../entities';
+import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
+import { CreatePostResult, UpdatePostResult } from '../graphql/results';
 import { AuthorizationMiddleware } from '../middlewares';
-import { PostService } from '../services';
+import { PostService, ValidationService } from '../services';
 
 @Service()
 @Resolver()
 export class PostResolver {
     @Inject()
     private readonly postService!: PostService;
+
+    @Inject()
+    private readonly validationService!: ValidationService;
 
     @Query(() => [Post])
     posts(): Promise<Post[]> {
@@ -22,18 +27,44 @@ export class PostResolver {
         return this.postService.getOneById(id);
     }
 
-    @Mutation(() => Post)
+    @Mutation(() => CreatePostResult)
     @UseMiddleware(AuthorizationMiddleware)
-    createPost(@Arg('title') title: string, @Ctx() ctx: MyContext): Promise<Post> {
-        return this.postService.create(title, ctx.req.session!.userId);
+    async createPost(
+        @Arg('post') { title, content }: CreatePostInput,
+        @Ctx() ctx: MyContext,
+    ): Promise<CreatePostResult> {
+        const validationResult = await this.validationService.validateCreatePostInput({
+            title,
+            content,
+        });
+
+        if (validationResult.errors && validationResult.errors.length > 0) {
+            return validationResult;
+        }
+
+        return this.postService.create(title, content, ctx.req.session!.userId);
     }
 
-    @Mutation(() => Post, { nullable: true })
-    updatePost(@Arg('id', () => Int) id: number, @Arg('title') title: string): Promise<Post> {
-        return this.postService.update(id, title);
+    @Mutation(() => UpdatePostResult)
+    @UseMiddleware(AuthorizationMiddleware)
+    async updatePost(
+        @Arg('id', () => Int) id: number,
+        @Arg('post') { title, content }: UpdatePostInput,
+    ): Promise<UpdatePostResult> {
+        const validationResult = await this.validationService.validateUpdatePostInput({
+            title,
+            content,
+        });
+
+        if (validationResult.errors && validationResult.errors.length > 0) {
+            return validationResult;
+        }
+
+        return this.postService.update(id, title, content);
     }
 
     @Mutation(() => Boolean)
+    @UseMiddleware(AuthorizationMiddleware)
     deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
         return this.postService.delete(id);
     }

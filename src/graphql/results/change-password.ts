@@ -1,8 +1,7 @@
 import { Field, ObjectType } from 'type-graphql';
 
-import { FieldError } from './errors';
-
 import { User } from '../../entities';
+import { FieldError } from '../types/errors';
 
 @ObjectType()
 export class ChangePasswordResult {

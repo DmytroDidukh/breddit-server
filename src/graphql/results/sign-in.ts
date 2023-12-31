@@ -1,8 +1,7 @@
 import { Field, ObjectType } from 'type-graphql';
 
-import { AuthenticationError } from './errors';
-
 import { User } from '../../entities';
+import { AuthenticationError } from '../types';
 
 @ObjectType()
 export class SignInResult {

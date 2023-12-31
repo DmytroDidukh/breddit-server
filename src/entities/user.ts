@@ -20,7 +20,7 @@ export class User extends BaseEntity {
     @Property({ type: 'text', unique: true })
     email!: string;
 
-    @Field(() => [Post], { nullable: false, defaultValue: [] })
+    // @Field(() => [Post], { nullable: false, defaultValue: [] })
     @OneToMany(() => Post, (post) => post.author, { orphanRemoval: true })
     posts = new Collection<Post>(this);
 }

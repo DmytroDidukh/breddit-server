@@ -4,6 +4,7 @@ import { Inject, Service } from 'typedi';
 import { UserService } from './user';
 
 import { Post } from '../entities';
+import { CreatePostResult, UpdatePostResult } from '../graphql/results';
 import { NotFoundError } from '../graphql/types';
 import { PostRepository } from '../repositories';
 
@@ -26,30 +27,38 @@ export class PostService {
         return this.postRepository.findOne({ id });
     }
 
-    async create(title: string, authorId: number): Promise<Post> {
+    async create(title: string, content: string, authorId: number): Promise<CreatePostResult> {
         const author = await this.userService.getOneById(authorId);
 
         if (!author) {
             throw new NotFoundError('User', authorId);
         }
 
-        const post = this.postRepository.create({ title, author });
+        const post = this.postRepository.create({ title, content, author });
         await this.em.persistAndFlush(post);
 
-        return post;
+        return { post };
     }
 
-    async update(id: number, title: string): Promise<Post> {
+    async update(id: number, title?: string, content?: string): Promise<UpdatePostResult> {
         const post = await this.getOneById(id);
 
         if (!post) {
             throw new NotFoundError('Post', id);
         }
 
-        const updatedPost = wrap(post).assign({ title }, { mergeObjects: true });
+        const updateData: Partial<Post> = {};
+        if (title !== undefined) {
+            updateData.title = title;
+        }
+        if (content !== undefined) {
+            updateData.content = content;
+        }
+
+        const updatedPost = wrap(post).assign(updateData, { mergeObjects: true });
         await this.em.persistAndFlush(updatedPost);
 
-        return updatedPost;
+        return { post: updatedPost };
     }
 
     async delete(id: number): Promise<boolean> {

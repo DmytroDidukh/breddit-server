@@ -7,8 +7,8 @@ import { MailerService } from './mailer';
 import { UserService } from './user';
 
 import { FORGET_PASSWORD_PREFIX } from '../constants';
-import { AuthenticationError, FieldError, SignInResult, SignUpResult } from '../graphql/types';
-import { ChangePasswordResult } from '../graphql/types/change-password-result';
+import { ChangePasswordResult, SignInResult, SignUpResult } from '../graphql/results';
+import { AuthenticationError, FieldError } from '../graphql/types';
 
 @Service()
 export class AuthService {
