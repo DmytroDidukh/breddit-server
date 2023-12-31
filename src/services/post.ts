@@ -4,8 +4,9 @@ import { Inject, Service } from 'typedi';
 import { UserService } from './user';
 
 import { Post } from '../entities';
+import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
 import { CreatePostResult, UpdatePostResult } from '../graphql/results';
-import { NotFoundError } from '../graphql/types';
+import { AuthorizationError, NotFoundError } from '../graphql/types';
 import { PostRepository } from '../repositories';
 
 @Service()
@@ -27,32 +28,40 @@ export class PostService {
         return this.postRepository.findOne({ id });
     }
 
-    async create(title: string, content: string, authorId: number): Promise<CreatePostResult> {
+    async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
         const author = await this.userService.getOneById(authorId);
 
         if (!author) {
             throw new NotFoundError('User', authorId);
         }
 
-        const post = this.postRepository.create({ title, content, author });
+        const post = this.postRepository.create({ ...postInput, author });
         await this.em.persistAndFlush(post);
 
         return { post };
     }
 
-    async update(id: number, title?: string, content?: string): Promise<UpdatePostResult> {
+    async update(
+        id: number,
+        postInput: UpdatePostInput,
+        userId: number,
+    ): Promise<UpdatePostResult> {
         const post = await this.getOneById(id);
 
         if (!post) {
             throw new NotFoundError('Post', id);
         }
 
-        const updateData: Partial<Post> = {};
-        if (title !== undefined) {
-            updateData.title = title;
+        if (post.author.id !== userId) {
+            throw new AuthorizationError('You have no permission to update this post.');
         }
-        if (content !== undefined) {
-            updateData.content = content;
+
+        const updateData: Partial<Post> = {};
+        if (postInput.title !== undefined) {
+            updateData.title = postInput.title;
+        }
+        if (postInput.content !== undefined) {
+            updateData.content = postInput.content;
         }
 
         const updatedPost = wrap(post).assign(updateData, { mergeObjects: true });

@@ -5,7 +5,7 @@ import { MyContext } from '../context';
 import { Post } from '../entities';
 import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
 import { CreatePostResult, UpdatePostResult } from '../graphql/results';
-import { AuthorizationMiddleware } from '../middlewares';
+import { AuthenticationMiddleware } from '../middlewares';
 import { PostService, ValidationService } from '../services';
 
 @Service()
@@ -28,17 +28,14 @@ export class PostResolver {
     }
 
     @Mutation(() => CreatePostResult)
-    @UseMiddleware(AuthorizationMiddleware)
+    @UseMiddleware(AuthenticationMiddleware)
     async createPost(
-        @Arg('post') { title, content }: CreatePostInput,
+        @Arg('post') postInput: CreatePostInput,
         @Ctx() ctx: MyContext,
     ): Promise<CreatePostResult> {
         const validationResult = await this.validationService.validateInput<CreatePostInput>(
             CreatePostInput,
-            {
-                title,
-                content,
-            },
+            postInput,
         );
 
         if (validationResult) {
@@ -47,21 +44,19 @@ export class PostResolver {
             };
         }
 
-        return this.postService.create(title, content, ctx.req.session!.userId);
+        return this.postService.create(postInput, ctx.req.session!.userId);
     }
 
     @Mutation(() => UpdatePostResult)
-    @UseMiddleware(AuthorizationMiddleware)
+    @UseMiddleware(AuthenticationMiddleware)
     async updatePost(
         @Arg('id', () => Int) id: number,
-        @Arg('post') { title, content }: UpdatePostInput,
+        @Arg('post') postInput: UpdatePostInput,
+        @Ctx() ctx: MyContext,
     ): Promise<UpdatePostResult> {
         const validationResult = await this.validationService.validateInput<UpdatePostInput>(
             UpdatePostInput,
-            {
-                title,
-                content,
-            },
+            postInput,
         );
 
         if (validationResult) {
@@ -70,11 +65,11 @@ export class PostResolver {
             };
         }
 
-        return this.postService.update(id, title, content);
+        return this.postService.update(id, postInput, ctx.req.session!.userId);
     }
 
     @Mutation(() => Boolean)
-    @UseMiddleware(AuthorizationMiddleware)
+    @UseMiddleware(AuthenticationMiddleware)
     deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
         return this.postService.delete(id);
     }
