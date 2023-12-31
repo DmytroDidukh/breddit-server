@@ -11,6 +11,6 @@ export class NotFoundError extends GraphQLError {
     }
 
     static formatMessage(entity: string, identifier: string | number): string {
-        return `The ${entity} with the specified ID ${identifier} was not found.`;
+        return `The ${entity} with the specified ID "${identifier}" was not found.`;
     }
 }

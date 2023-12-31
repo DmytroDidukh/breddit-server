@@ -1,4 +1,4 @@
-import { EntityManager, wrap } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
 import { UserService } from './user';
@@ -28,21 +28,14 @@ export class PostService {
         return this.postRepository.findOne({ id });
     }
 
-    async getOneByIdOrFail(id: number): Promise<Post> {
-        const post = await this.postRepository.findOne({ id });
+    async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
+        const author = await this.userService.getOneById(authorId);
 
-        if (!post) {
-            throw new NotFoundError('Post', id);
+        if (!author) {
+            throw new NotFoundError('User', authorId);
         }
 
-        return post;
-    }
-
-    async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
-        const author = await this.userService.getOneByIdOrFail(authorId);
-
-        const post = this.postRepository.create({ ...postInput, author });
-        await this.em.persistAndFlush(post);
+        const post = await this.postRepository.createAndSave({ ...postInput, author }, this.em);
 
         return { post };
     }
@@ -52,7 +45,7 @@ export class PostService {
         postInput: UpdatePostInput,
         userId: number,
     ): Promise<UpdatePostResult> {
-        const post = await this.getOneByIdOrFail(id);
+        const post = await this.postRepository.getOneByIdOrFail(id);
 
         if (post.author.id !== userId) {
             throw new AuthorizationError('You have no permission to update this post.');
@@ -66,17 +59,12 @@ export class PostService {
             updateData.content = postInput.content;
         }
 
-        const updatedPost = wrap(post).assign(updateData, { mergeObjects: true });
-        await this.em.persistAndFlush(updatedPost);
+        const updatedPost = await this.postRepository.updateAndSave(id, updateData, this.em);
 
         return { post: updatedPost };
     }
 
-    async delete(id: number): Promise<boolean> {
-        const post = await this.getOneByIdOrFail(id);
-
-        await this.em.remove(post).flush();
-
-        return true;
+    delete(id: number): Promise<boolean> {
+        return this.postRepository.deleteAndSave(id, this.em);
     }
 }

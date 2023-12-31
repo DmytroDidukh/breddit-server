@@ -1,5 +1,7 @@
-import { EntityRepository } from '@mikro-orm/core';
+import { BaseRepository } from './base';
 
 import { User } from '../entities';
 
-export class UserRepository extends EntityRepository<User> {}
+export class UserRepository extends BaseRepository<User> {
+    name: string = 'User';
+}

@@ -1,5 +1,7 @@
-import { EntityRepository } from '@mikro-orm/core';
+import { BaseRepository } from './base';
 
 import { Post } from '../entities';
 
-export class PostRepository extends EntityRepository<Post> {}
+export class PostRepository extends BaseRepository<Post> {
+    name: string = 'Post';
+}

@@ -1,8 +1,7 @@
-import { EntityManager, wrap } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
 import { User } from '../entities';
-import { NotFoundError } from '../graphql/types';
 import { UserRepository } from '../repositories';
 
 @Service()
@@ -18,10 +17,10 @@ export class UserService {
     }
 
     async create(username: string, hashedPassword: string, email: string): Promise<User> {
-        const user = this.userRepository.create({ username, password: hashedPassword, email });
-        await this.em.persistAndFlush(user);
-
-        return user;
+        return this.userRepository.createAndSave(
+            { username, password: hashedPassword, email },
+            this.em,
+        );
     }
 
     async getOneByUsername(username: string): Promise<User | null> {
@@ -32,34 +31,15 @@ export class UserService {
         return await this.userRepository.findOne({ id });
     }
 
-    async getOneByIdOrFail(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({ id });
-
-        if (!user) {
-            throw new NotFoundError('User', id);
-        }
-
-        return user;
-    }
-
     async getOneByEmail(email: string): Promise<User | null> {
         return await this.userRepository.findOne({ email });
     }
 
-    async update(id: number, data: Partial<User>): Promise<User> {
-        const user = await this.getOneByIdOrFail(id);
-
-        const updatedUser = wrap(user).assign(data, { mergeObjects: true });
-        await this.em.persistAndFlush(updatedUser);
-
-        return updatedUser;
+    update(id: number, data: Partial<User>): Promise<User> {
+        return this.userRepository.updateAndSave(id, data, this.em);
     }
 
-    async delete(id: number): Promise<boolean> {
-        const user = await this.getOneByIdOrFail(id);
-
-        await this.em.remove(user).flush();
-
-        return true;
+    delete(id: number): Promise<boolean> {
+        return this.userRepository.deleteAndSave(id, this.em);
     }
 }
