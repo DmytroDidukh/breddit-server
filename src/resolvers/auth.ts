@@ -3,8 +3,9 @@ import { Inject, Service } from 'typedi';
 
 import { COOKIE_NAME } from '../constants';
 import { MyContext } from '../context';
+import { User } from '../entities';
 import { ChangePasswordInput, SignInInput, SignUpInput } from '../graphql/inputs';
-import { ChangePasswordResult, SignInResult, SignUpResult } from '../graphql/results';
+import { ChangePasswordResult, SignUpResult } from '../graphql/results';
 import { AuthService, ValidationService } from '../services';
 
 @Service()
@@ -43,17 +44,17 @@ export class AuthResolver {
         return result;
     }
 
-    @Mutation(() => SignInResult)
+    @Mutation(() => User)
     async signIn(
         @Arg('user') { username, password }: SignInInput,
         @Ctx() ctx: MyContext,
-    ): Promise<SignInResult> {
-        const result = await this.authService.signIn(username, password);
+    ): Promise<User> {
+        const user = await this.authService.signIn(username, password);
 
         // Store the user's ID in the session.
-        ctx.req.session!.userId = result.user?.id;
+        ctx.req.session!.userId = user?.id;
 
-        return result;
+        return user;
     }
 
     @Mutation(() => Boolean)

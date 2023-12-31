@@ -7,7 +7,8 @@ import { MailerService } from './mailer';
 import { UserService } from './user';
 
 import { FORGET_PASSWORD_PREFIX } from '../constants';
-import { ChangePasswordResult, SignInResult, SignUpResult } from '../graphql/results';
+import { User } from '../entities';
+import { ChangePasswordResult, SignUpResult } from '../graphql/results';
 import { AuthenticationError, FieldError } from '../graphql/types';
 
 @Service()
@@ -38,24 +39,20 @@ export class AuthService {
         return { user: await this.userService.create(username, hashedPassword, email) };
     }
 
-    async signIn(username: string, password: string): Promise<SignInResult> {
+    async signIn(username: string, password: string): Promise<User> {
         const user = await this.userService.getOneByUsername(username);
 
         if (!user) {
-            return {
-                errors: [new AuthenticationError('Invalid username or password')],
-            };
+            throw new AuthenticationError('Invalid username or password');
         }
 
         const isPasswordValid = await this.verifyPassword(password, user.password);
 
         if (!isPasswordValid) {
-            return {
-                errors: [new AuthenticationError('Invalid username or password')],
-            };
+            throw new AuthenticationError('Invalid username or password');
         }
 
-        return { user };
+        return user;
     }
 
     async forgotPassword(email: string): Promise<boolean> {
