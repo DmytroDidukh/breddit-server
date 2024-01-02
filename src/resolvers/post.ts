@@ -18,11 +18,13 @@ export class PostResolver {
     private readonly validationService!: ValidationService;
 
     @Query(() => [Post])
+    @UseMiddleware(AuthenticationMiddleware)
     posts(): Promise<Post[]> {
         return this.postService.getAll();
     }
 
     @Query(() => Post, { nullable: true })
+    @UseMiddleware(AuthenticationMiddleware)
     post(@Arg('id') id: number): Promise<Post | null> {
         return this.postService.getOneById(id);
     }
@@ -70,7 +72,7 @@ export class PostResolver {
 
     @Mutation(() => Boolean)
     @UseMiddleware(AuthenticationMiddleware)
-    deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
-        return this.postService.delete(id);
+    deletePost(@Arg('id', () => Int) id: number, @Ctx() ctx: MyContext): Promise<boolean> {
+        return this.postService.delete(id, ctx.req.session!.userId);
     }
 }

@@ -64,7 +64,11 @@ export class PostService {
         return { post: updatedPost };
     }
 
-    delete(id: number): Promise<boolean> {
+    delete(id: number, userId: number): Promise<boolean> {
+        if (id !== userId) {
+            throw new AuthorizationError('You have no permission to delete this post.');
+        }
+
         return this.postRepository.deleteAndSave(id, this.em);
     }
 }

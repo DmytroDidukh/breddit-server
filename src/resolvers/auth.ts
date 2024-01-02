@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
 import { COOKIE_NAME } from '../constants';
@@ -6,6 +6,7 @@ import { MyContext } from '../context';
 import { User } from '../entities';
 import { ChangePasswordInput, SignInInput, SignUpInput } from '../graphql/inputs';
 import { ChangePasswordResult, SignUpResult } from '../graphql/results';
+import { AuthenticationMiddleware } from '../middlewares';
 import { AuthService, ValidationService } from '../services';
 
 @Service()
@@ -58,6 +59,7 @@ export class AuthResolver {
     }
 
     @Mutation(() => Boolean)
+    @UseMiddleware(AuthenticationMiddleware)
     async signOut(@Ctx() ctx: MyContext): Promise<boolean> {
         return await new Promise(
             (resolve) =>

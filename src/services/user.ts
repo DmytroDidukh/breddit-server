@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Inject, Service } from 'typedi';
 
 import { User } from '../entities';
+import { AuthorizationError } from '../graphql/types';
 import { UserRepository } from '../repositories';
 
 @Service()
@@ -39,7 +40,11 @@ export class UserService {
         return this.userRepository.updateAndSave(id, data, this.em);
     }
 
-    delete(id: number): Promise<boolean> {
+    delete(id: number, userId: number): Promise<boolean> {
+        if (id !== userId) {
+            throw new AuthorizationError('You have no permission to delete this user.');
+        }
+
         return this.userRepository.deleteAndSave(id, this.em);
     }
 }
