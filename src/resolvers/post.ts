@@ -79,4 +79,10 @@ export class PostResolver {
     deletePost(@Arg('id', () => Int) id: number, @Ctx() ctx: MyContext): Promise<boolean> {
         return this.postService.delete(id, ctx.req.session!.userId);
     }
+
+    @Query(() => [Post])
+    @UseMiddleware(AuthenticationMiddleware)
+    postsByAuthor(@Arg('id', () => Int) id: number): Promise<Post[]> {
+        return this.postService.getPostsByAuthor(id);
+    }
 }

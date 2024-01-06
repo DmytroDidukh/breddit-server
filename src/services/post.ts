@@ -7,7 +7,7 @@ import { UserService } from './user';
 import { Post } from '../entities';
 import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
 import { CreatePostResult, UpdatePostResult } from '../graphql/results';
-import { AuthorizationError, NotFoundError } from '../graphql/types';
+import { AuthorizationError } from '../graphql/types';
 import { PostRepository } from '../repositories';
 
 @Service()
@@ -36,11 +36,7 @@ export class PostService {
     }
 
     async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
-        const author = await this.userService.getOneById(authorId);
-
-        if (!author) {
-            throw new NotFoundError('User', authorId);
-        }
+        const author = await this.userService.getOneByIdOrFail(authorId);
 
         const post = await this.postRepository.createAndSave({ ...postInput, author }, this.em);
 
@@ -79,5 +75,13 @@ export class PostService {
         }
 
         return this.postRepository.deleteAndSave(id, this.em);
+    }
+
+    async getPostsByAuthor(authorId: number): Promise<Post[]> {
+        const author = await this.userService.getOneByIdOrFail(authorId);
+
+        await this.em.populate(author, ['posts']);
+
+        return author.posts.getItems();
     }
 }
