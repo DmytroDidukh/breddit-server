@@ -4,10 +4,7 @@ import express, { Express } from 'express';
 import session from 'express-session';
 
 import { __prod__, COOKIE_NAME } from './constants';
-import { setupDatabase } from './db';
-import { setupApolloServer } from './loaders/apollo-server';
-import { setupContainer } from './loaders/container';
-import { setupRedisStore } from './loaders/redis-store';
+import { setupApolloServer, setupContainer, setupDatabase, setupRedisStore } from './loaders';
 
 async function bootstrap() {
     const app: Express = express();

@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { SqlEntityManager } from '@mikro-orm/postgresql';
 import { Inject, Service } from 'typedi';
 
 import { User } from '../entities';
@@ -11,7 +11,7 @@ export class UserService {
     private readonly userRepository!: UserRepository;
 
     @Inject()
-    private readonly em!: EntityManager;
+    private readonly em!: SqlEntityManager;
 
     async getAll(): Promise<User[]> {
         return this.userRepository.find({});

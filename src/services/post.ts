@@ -1,4 +1,5 @@
-import { EntityManager } from '@mikro-orm/core';
+import { QueryOrder } from '@mikro-orm/core';
+import { SqlEntityManager } from '@mikro-orm/postgresql';
 import { Inject, Service } from 'typedi';
 
 import { UserService } from './user';
@@ -18,10 +19,25 @@ export class PostService {
     private readonly userService!: UserService;
 
     @Inject()
-    private readonly em!: EntityManager;
+    private readonly em!: SqlEntityManager;
 
-    async getAll(): Promise<Post[]> {
-        return this.postRepository.find({});
+    async getAll(limit: number, cursor: Date | null): Promise<Post[]> {
+        const query = this.em
+            .createQueryBuilder(Post, 'p')
+            .orderBy({ 'p.createdAt': QueryOrder.DESC })
+            .where(cursor ? { createdAt: { $lt: cursor } } : {})
+            .limit(limit);
+
+        console.log(query);
+        //
+        // if (cursor) {
+        //     // Assuming cursor is an ID, adjust if it's a different field like a timestamp
+        //     query.andWhere({ createdAt: { $lt: cursor } });
+        // }
+
+        return query.getResultList();
+
+        // return this.postRepository.find({});
     }
 
     async getOneById(id: number): Promise<Post | null> {

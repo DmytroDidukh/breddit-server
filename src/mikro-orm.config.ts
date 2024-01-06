@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { MikroORM } from '@mikro-orm/core';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 import { __prod__ } from './constants';
 import { Post, User } from './entities';
@@ -17,4 +18,4 @@ export default {
     password: '875621',
     type: 'postgresql',
     debug: !__prod__,
-} as Parameters<typeof MikroORM.init>[0];
+} as Parameters<typeof MikroORM.init<PostgreSqlDriver>>[0];

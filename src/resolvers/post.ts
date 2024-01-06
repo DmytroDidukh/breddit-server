@@ -19,8 +19,12 @@ export class PostResolver {
 
     @Query(() => [Post])
     @UseMiddleware(AuthenticationMiddleware)
-    posts(): Promise<Post[]> {
-        return this.postService.getAll();
+    posts(
+        @Arg('limit', () => Int, { nullable: true }) limit: number,
+        @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
+    ): Promise<Post[]> {
+        const maxLimit = Math.min(50, limit);
+        return this.postService.getAll(maxLimit, cursor);
     }
 
     @Query(() => Post, { nullable: true })
