@@ -2,7 +2,7 @@ import { Arg, Ctx, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-gr
 import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
-import { User } from '../entities';
+import { Post, User } from '../entities';
 import { AuthenticationMiddleware } from '../middlewares';
 import { UserService } from '../services';
 
@@ -32,5 +32,11 @@ export class UserResolver {
         ctx.req.session!.destroy(() => {});
 
         return result;
+    }
+
+    @Query(() => [Post])
+    @UseMiddleware(AuthenticationMiddleware)
+    myPosts(@Ctx() ctx: MyContext): Promise<Post[]> {
+        return this.userService.getMyPosts(ctx.req.session!.userId);
     }
 }

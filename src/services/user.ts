@@ -1,7 +1,7 @@
 import { SqlEntityManager } from '@mikro-orm/postgresql';
 import { Inject, Service } from 'typedi';
 
-import { User } from '../entities';
+import { Post, User } from '../entities';
 import { AuthorizationError } from '../graphql/types';
 import { UserRepository } from '../repositories';
 
@@ -46,5 +46,13 @@ export class UserService {
         }
 
         return this.userRepository.deleteAndSave(id, this.em);
+    }
+
+    async getMyPosts(userId: number): Promise<Post[]> {
+        const user = await this.userRepository.getOneByIdOrFail(userId);
+
+        await this.em.populate(user, ['posts']);
+
+        return user.posts.getItems();
     }
 }
