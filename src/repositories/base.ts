@@ -42,7 +42,7 @@ export class BaseRepository<T extends BaseEntity> extends EntityRepository<T> {
     public async deleteAndSave(id: number, em: EntityManager): Promise<boolean> {
         const entity = await this.getOneByIdOrFail(id);
 
-        await em.remove(entity).flush();
+        await em.removeAndFlush(entity);
 
         return true;
     }
