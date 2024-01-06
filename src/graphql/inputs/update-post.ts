@@ -10,7 +10,7 @@ export class UpdatePostInput {
     title?: string;
 
     @Field(() => String, { nullable: true })
-    @ValidateIf((o) => o.title !== undefined)
+    @ValidateIf((o) => o.content !== undefined)
     @IsString({ message: 'Content must be a string.' })
     @MinLength(1, { message: 'Content cannot be empty' })
     content?: string;
