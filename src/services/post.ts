@@ -28,16 +28,7 @@ export class PostService {
             .where(cursor ? { createdAt: { $lt: cursor } } : {})
             .limit(limit);
 
-        console.log(query);
-        //
-        // if (cursor) {
-        //     // Assuming cursor is an ID, adjust if it's a different field like a timestamp
-        //     query.andWhere({ createdAt: { $lt: cursor } });
-        // }
-
         return query.getResultList();
-
-        // return this.postRepository.find({});
     }
 
     async getOneById(id: number): Promise<Post | null> {
@@ -80,8 +71,10 @@ export class PostService {
         return { post: updatedPost };
     }
 
-    delete(id: number, userId: number): Promise<boolean> {
-        if (id !== userId) {
+    async delete(id: number, userId: number): Promise<boolean> {
+        const post = await this.postRepository.getOneByIdOrFail(id);
+
+        if (post.author.id !== userId) {
             throw new AuthorizationError('You have no permission to delete this post.');
         }
 
