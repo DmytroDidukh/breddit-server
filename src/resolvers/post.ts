@@ -1,4 +1,14 @@
-import { Arg, Ctx, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import {
+    Arg,
+    Ctx,
+    FieldResolver,
+    Int,
+    Mutation,
+    Query,
+    Resolver,
+    Root,
+    UseMiddleware,
+} from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
@@ -9,13 +19,19 @@ import { AuthenticationMiddleware } from '../middlewares';
 import { PostService, ValidationService } from '../services';
 
 @Service()
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
     @Inject()
     private readonly postService!: PostService;
 
     @Inject()
     private readonly validationService!: ValidationService;
+
+    @FieldResolver(() => String)
+    contentSnippet(@Root() root: Post) {
+        const { content } = root;
+        return content.length > 250 ? content.slice(0, 250) + '...' : content;
+    }
 
     @Query(() => [Post])
     @UseMiddleware(AuthenticationMiddleware)
