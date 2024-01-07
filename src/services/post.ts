@@ -21,15 +21,14 @@ export class PostService {
     @Inject()
     private readonly em!: SqlEntityManager;
 
-    async getAll(limit: number, cursor: Date | null): Promise<Post[]> {
-        const maxLimit = Math.min(50, limit);
-        const query = this.em
+    async getAll(cursor: Date | null, limit?: number): Promise<Post[]> {
+        const maxLimit = this.ensureMaxLimit(limit);
+        return this.em
             .createQueryBuilder(Post, 'p')
             .orderBy({ 'p.createdAt': QueryOrder.DESC })
             .where(cursor ? { createdAt: { $lt: cursor } } : {})
-            .limit(maxLimit);
-
-        return query.getResultList();
+            .limit(maxLimit)
+            .getResultList();
     }
 
     async findOneById(id: number): Promise<Post | null> {
@@ -78,11 +77,18 @@ export class PostService {
         return this.postRepository.deleteAndSave(id, this.em);
     }
 
-    async getPostsByAuthor(authorId: number): Promise<Post[]> {
-        const author = await this.userService.findOneByIdOrFail(authorId, {
-            populate: ['posts'] as unknown as never[],
-        });
+    getPostsByAuthor(authorId: number, cursor: Date | null, limit?: number): Promise<Post[]> {
+        const maxLimit = this.ensureMaxLimit(limit);
+        return this.em
+            .createQueryBuilder(Post, 'p')
+            .where({ author: { id: authorId } })
+            .orderBy({ 'p.createdAt': QueryOrder.DESC })
+            .andWhere(cursor ? { createdAt: { $lt: cursor } } : {})
+            .limit(maxLimit)
+            .getResultList();
+    }
 
-        return author.posts.getItems();
+    private ensureMaxLimit(limit: number = 25) {
+        return Math.min(50, limit);
     }
 }
