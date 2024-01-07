@@ -22,11 +22,12 @@ export class PostService {
     private readonly em!: SqlEntityManager;
 
     async getAll(limit: number, cursor: Date | null): Promise<Post[]> {
+        const maxLimit = Math.min(50, limit);
         const query = this.em
             .createQueryBuilder(Post, 'p')
             .orderBy({ 'p.createdAt': QueryOrder.DESC })
             .where(cursor ? { createdAt: { $lt: cursor } } : {})
-            .limit(limit);
+            .limit(maxLimit);
 
         return query.getResultList();
     }

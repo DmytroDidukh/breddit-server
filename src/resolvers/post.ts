@@ -23,8 +23,7 @@ export class PostResolver {
         @Arg('limit', () => Int, { nullable: true }) limit: number,
         @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
     ): Promise<Post[]> {
-        const maxLimit = Math.min(50, limit);
-        return this.postService.getAll(maxLimit, cursor);
+        return this.postService.getAll(limit, cursor);
     }
 
     @Query(() => Post, { nullable: true })
