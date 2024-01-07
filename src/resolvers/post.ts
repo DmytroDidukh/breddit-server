@@ -36,10 +36,10 @@ export class PostResolver {
     @Query(() => [Post])
     @UseMiddleware(AuthenticationMiddleware)
     posts(
-        @Arg('limit', () => Int, { nullable: true }) limit: number,
+        @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
     ): Promise<Post[]> {
-        return this.postService.getAll(cursor, limit);
+        return this.postService.getAll(limit, cursor);
     }
 
     @Query(() => Post, { nullable: true })
@@ -99,9 +99,9 @@ export class PostResolver {
     @UseMiddleware(AuthenticationMiddleware)
     postsByAuthor(
         @Arg('id', () => Int) id: number,
-        @Arg('limit', () => Int, { nullable: true }) limit: number,
+        @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
     ): Promise<Post[]> {
-        return this.postService.getPostsByAuthor(id, cursor, limit);
+        return this.postService.getPostsByAuthor(id, limit, cursor);
     }
 }

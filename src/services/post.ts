@@ -21,7 +21,7 @@ export class PostService {
     @Inject()
     private readonly em!: SqlEntityManager;
 
-    async getAll(cursor: Date | null, limit?: number): Promise<Post[]> {
+    async getAll(limit: number, cursor: Date | null): Promise<Post[]> {
         const maxLimit = this.ensureMaxLimit(limit);
         return this.em
             .createQueryBuilder(Post, 'p')
@@ -77,7 +77,7 @@ export class PostService {
         return this.postRepository.deleteAndSave(id, this.em);
     }
 
-    getPostsByAuthor(authorId: number, cursor: Date | null, limit?: number): Promise<Post[]> {
+    getPostsByAuthor(authorId: number, limit: number, cursor: Date | null): Promise<Post[]> {
         const maxLimit = this.ensureMaxLimit(limit);
         return this.em
             .createQueryBuilder(Post, 'p')
@@ -88,7 +88,7 @@ export class PostService {
             .getResultList();
     }
 
-    private ensureMaxLimit(limit: number = 25) {
+    private ensureMaxLimit(limit: number) {
         return Math.min(50, limit);
     }
 }
