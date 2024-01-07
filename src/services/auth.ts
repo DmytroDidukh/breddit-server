@@ -20,14 +20,14 @@ export class AuthService {
     private readonly redis!: RedisStore;
 
     async signUp(username: string, password: string, email: string): Promise<SignUpResult> {
-        const user = await this.userService.getOneByUsername(username);
+        const user = await this.userService.findOneByUsername(username);
         if (user) {
             return {
                 errors: [new FieldError('username', 'Username already taken')],
             };
         }
 
-        const userByEmail = await this.userService.getOneByEmail(email);
+        const userByEmail = await this.userService.findOneByEmail(email);
         if (userByEmail) {
             return {
                 errors: [new FieldError('email', 'Email already taken')],
@@ -40,7 +40,7 @@ export class AuthService {
     }
 
     async signIn(username: string, password: string): Promise<User> {
-        const user = await this.userService.getOneByUsername(username);
+        const user = await this.userService.findOneByUsername(username);
 
         if (!user) {
             throw new AuthenticationError('Invalid username or password');
@@ -56,7 +56,7 @@ export class AuthService {
     }
 
     async forgotPassword(email: string): Promise<boolean> {
-        const user = await this.userService.getOneByEmail(email);
+        const user = await this.userService.findOneByEmail(email);
 
         if (!user) {
             return true;
@@ -89,7 +89,7 @@ export class AuthService {
             };
         }
 
-        const user = await this.userService.getOneById(userId);
+        const user = await this.userService.findOneById(userId);
         const hashedPassword = await this.hashPassword(password);
 
         await this.redis.destroy(FORGET_PASSWORD_PREFIX + token);

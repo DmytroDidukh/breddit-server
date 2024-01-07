@@ -15,7 +15,7 @@ export class UserResolver {
     @Query(() => User, { nullable: true })
     @UseMiddleware(AuthenticationMiddleware)
     me(@Ctx() ctx: MyContext): Promise<User | null> {
-        return this.userService.getOneById(ctx.req.session!.userId);
+        return this.userService.findOneById(ctx.req.session!.userId);
     }
 
     @Query(() => [User])

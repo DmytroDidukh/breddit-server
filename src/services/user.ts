@@ -1,3 +1,4 @@
+import { FindOneOrFailOptions } from '@mikro-orm/core';
 import { SqlEntityManager } from '@mikro-orm/postgresql';
 import { Inject, Service } from 'typedi';
 
@@ -24,19 +25,19 @@ export class UserService {
         );
     }
 
-    getOneByUsername(username: string): Promise<User | null> {
+    findOneByUsername(username: string): Promise<User | null> {
         return this.userRepository.findOne({ username });
     }
 
-    getOneById(id: number): Promise<User | null> {
+    findOneById(id: number): Promise<User | null> {
         return this.userRepository.findOne({ id });
     }
 
-    getOneByIdOrFail(id: number): Promise<User> {
-        return this.userRepository.getOneByIdOrFail(id);
+    findOneByIdOrFail(id: number, options?: FindOneOrFailOptions<User>): Promise<User> {
+        return this.userRepository.findOneByIdOrFail(id, options);
     }
 
-    getOneByEmail(email: string): Promise<User | null> {
+    findOneByEmail(email: string): Promise<User | null> {
         return this.userRepository.findOne({ email });
     }
 

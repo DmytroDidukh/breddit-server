@@ -30,7 +30,7 @@ export class PostResolver {
     @Query(() => Post, { nullable: true })
     @UseMiddleware(AuthenticationMiddleware)
     post(@Arg('id') id: number): Promise<Post | null> {
-        return this.postService.getOneById(id);
+        return this.postService.findOneById(id);
     }
 
     @Mutation(() => CreatePostResult)

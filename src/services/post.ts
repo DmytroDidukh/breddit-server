@@ -31,12 +31,12 @@ export class PostService {
         return query.getResultList();
     }
 
-    async getOneById(id: number): Promise<Post | null> {
+    async findOneById(id: number): Promise<Post | null> {
         return this.postRepository.findOne({ id });
     }
 
     async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
-        const author = await this.userService.getOneByIdOrFail(authorId);
+        const author = await this.userService.findOneByIdOrFail(authorId);
 
         const post = await this.postRepository.createAndSave({ ...postInput, author }, this.em);
 
@@ -48,7 +48,7 @@ export class PostService {
         postInput: UpdatePostInput,
         userId: number,
     ): Promise<UpdatePostResult> {
-        const post = await this.postRepository.getOneByIdOrFail(id);
+        const post = await this.postRepository.findOneByIdOrFail(id);
 
         if (post.author.id !== userId) {
             throw new AuthorizationError('You have no permission to update this post.');
@@ -68,7 +68,7 @@ export class PostService {
     }
 
     async delete(id: number, userId: number): Promise<boolean> {
-        const post = await this.postRepository.getOneByIdOrFail(id);
+        const post = await this.postRepository.findOneByIdOrFail(id);
 
         if (post.author.id !== userId) {
             throw new AuthorizationError('You have no permission to delete this post.');
@@ -78,9 +78,9 @@ export class PostService {
     }
 
     async getPostsByAuthor(authorId: number): Promise<Post[]> {
-        const author = await this.userService.getOneByIdOrFail(authorId);
-
-        await this.em.populate(author, ['posts']);
+        const author = await this.userService.findOneByIdOrFail(authorId, {
+            populate: ['posts'] as unknown as never[],
+        });
 
         return author.posts.getItems();
     }
