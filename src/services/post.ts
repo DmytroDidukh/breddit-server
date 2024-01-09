@@ -6,7 +6,7 @@ import { UserService } from './user';
 
 import { Post } from '../entities';
 import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
-import { CreatePostResult, PaginatedPostsResult, UpdatePostResult } from '../graphql/results';
+import { CreatePostResult, PostsResult, UpdatePostResult } from '../graphql/results';
 import { AuthorizationError, PageInfo } from '../graphql/types';
 import { PostRepository } from '../repositories';
 
@@ -21,7 +21,7 @@ export class PostService {
     @Inject()
     private readonly em!: SqlEntityManager;
 
-    async getAll(limit: number, cursor: Date | null): Promise<PaginatedPostsResult> {
+    async getAll(limit: number, cursor: Date | null): Promise<PostsResult> {
         const maxLimit = this.ensureMaxLimit(limit);
 
         const posts = await this.em
@@ -34,7 +34,7 @@ export class PostService {
         const pageInfo = this.buildPageInfo(posts, maxLimit, cursor);
 
         return {
-            posts,
+            items: posts,
             pageInfo,
         };
     }
@@ -89,7 +89,7 @@ export class PostService {
         authorId: number,
         limit: number,
         cursor: Date | null,
-    ): Promise<PaginatedPostsResult> {
+    ): Promise<PostsResult> {
         const maxLimit = this.ensureMaxLimit(limit);
         const posts = await this.em
             .createQueryBuilder(Post, 'p')
@@ -102,7 +102,7 @@ export class PostService {
         const pageInfo = this.buildPageInfo(posts, maxLimit, cursor);
 
         return {
-            posts,
+            items: posts,
             pageInfo,
         };
     }

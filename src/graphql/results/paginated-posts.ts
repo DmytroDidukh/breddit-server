@@ -4,9 +4,9 @@ import { Post } from '../../entities';
 import { PageInfo } from '../types';
 
 @ObjectType()
-export class PaginatedPostsResult {
+export class PostsResult {
     @Field(() => [Post])
-    posts: Post[];
+    items: Post[];
 
     @Field(() => PageInfo)
     pageInfo: PageInfo;
