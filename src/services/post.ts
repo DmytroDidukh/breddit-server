@@ -6,8 +6,8 @@ import { UserService } from './user';
 
 import { Post } from '../entities';
 import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
-import { CreatePostResult, UpdatePostResult } from '../graphql/results';
-import { AuthorizationError } from '../graphql/types';
+import { CreatePostResult, PaginatedPostsResult, UpdatePostResult } from '../graphql/results';
+import { AuthorizationError, PageInfo } from '../graphql/types';
 import { PostRepository } from '../repositories';
 
 @Service()
@@ -21,14 +21,22 @@ export class PostService {
     @Inject()
     private readonly em!: SqlEntityManager;
 
-    async getAll(limit: number, cursor: Date | null): Promise<Post[]> {
+    async getAll(limit: number, cursor: Date | null): Promise<PaginatedPostsResult> {
         const maxLimit = this.ensureMaxLimit(limit);
-        return this.em
+
+        const posts = await this.em
             .createQueryBuilder(Post, 'p')
             .orderBy({ 'p.createdAt': QueryOrder.DESC })
             .where(cursor ? { createdAt: { $lt: cursor } } : {})
-            .limit(maxLimit)
+            .limit(maxLimit + 1) // Fetch one extra record to determine if there's a next page
             .getResultList();
+
+        const pageInfo = this.buildPageInfo(posts, maxLimit, cursor);
+
+        return {
+            posts,
+            pageInfo,
+        };
     }
 
     async findOneById(id: number): Promise<Post | null> {
@@ -77,18 +85,45 @@ export class PostService {
         return this.postRepository.deleteAndSave(id, this.em);
     }
 
-    getPostsByAuthor(authorId: number, limit: number, cursor: Date | null): Promise<Post[]> {
+    async getPostsByAuthor(
+        authorId: number,
+        limit: number,
+        cursor: Date | null,
+    ): Promise<PaginatedPostsResult> {
         const maxLimit = this.ensureMaxLimit(limit);
-        return this.em
+        const posts = await this.em
             .createQueryBuilder(Post, 'p')
             .where({ author: { id: authorId } })
             .orderBy({ 'p.createdAt': QueryOrder.DESC })
             .andWhere(cursor ? { createdAt: { $lt: cursor } } : {})
-            .limit(maxLimit)
+            .limit(maxLimit + 1)
             .getResultList();
+
+        const pageInfo = this.buildPageInfo(posts, maxLimit, cursor);
+
+        return {
+            posts,
+            pageInfo,
+        };
     }
 
     private ensureMaxLimit(limit: number) {
         return Math.min(50, limit);
+    }
+
+    private buildPageInfo(posts: Post[], limit: number, cursor: Date | null): PageInfo {
+        const hasNextPage = posts.length > limit;
+
+        if (hasNextPage) {
+            posts.pop();
+        }
+
+        const lastPost = posts[posts.length - 1];
+        return {
+            startCursor: null,
+            endCursor: hasNextPage && lastPost.createdAt ? lastPost.createdAt : null,
+            hasNextPage,
+            hasPreviousPage: !!cursor,
+        };
     }
 }

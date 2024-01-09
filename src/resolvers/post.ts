@@ -14,7 +14,7 @@ import { Inject, Service } from 'typedi';
 import { MyContext } from '../context';
 import { Post } from '../entities';
 import { CreatePostInput, UpdatePostInput } from '../graphql/inputs';
-import { CreatePostResult, UpdatePostResult } from '../graphql/results';
+import { CreatePostResult, PaginatedPostsResult, UpdatePostResult } from '../graphql/results';
 import { AuthenticationMiddleware } from '../middlewares';
 import { PostService, ValidationService } from '../services';
 
@@ -33,12 +33,12 @@ export class PostResolver {
         return content.length > 250 ? content.slice(0, 250) + '...' : content;
     }
 
-    @Query(() => [Post])
+    @Query(() => PaginatedPostsResult)
     @UseMiddleware(AuthenticationMiddleware)
     posts(
         @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
-    ): Promise<Post[]> {
+    ): Promise<PaginatedPostsResult> {
         return this.postService.getAll(limit, cursor);
     }
 
@@ -95,13 +95,13 @@ export class PostResolver {
         return this.postService.delete(id, ctx.req.session!.userId);
     }
 
-    @Query(() => [Post])
+    @Query(() => PaginatedPostsResult)
     @UseMiddleware(AuthenticationMiddleware)
     postsByAuthor(
         @Arg('id', () => Int) id: number,
         @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
-    ): Promise<Post[]> {
+    ): Promise<PaginatedPostsResult> {
         return this.postService.getPostsByAuthor(id, limit, cursor);
     }
 }
