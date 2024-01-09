@@ -98,10 +98,10 @@ export class PostResolver {
     @Query(() => PaginatedPostsResult)
     @UseMiddleware(AuthenticationMiddleware)
     postsByAuthor(
-        @Arg('id', () => Int) id: number,
+        @Arg('authorId', () => Int) authorId: number,
         @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => Date, { nullable: true }) cursor: Date | null,
     ): Promise<PaginatedPostsResult> {
-        return this.postService.getPostsByAuthor(id, limit, cursor);
+        return this.postService.getPostsByAuthor(authorId, limit, cursor);
     }
 }

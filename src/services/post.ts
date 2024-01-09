@@ -121,7 +121,7 @@ export class PostService {
         const lastPost = posts[posts.length - 1];
         return {
             startCursor: null,
-            endCursor: hasNextPage && lastPost.createdAt ? lastPost.createdAt : null,
+            endCursor: hasNextPage && lastPost.createdAt ? lastPost.createdAt.toISOString() : null,
             hasNextPage,
             hasPreviousPage: !!cursor,
         };
