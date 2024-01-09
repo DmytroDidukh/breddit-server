@@ -3,10 +3,10 @@ import { Field, ObjectType } from 'type-graphql';
 @ObjectType()
 export class PageInfo {
     @Field(() => String, { nullable: true })
-    endCursor: Date | string | null;
+    endCursor: string | null;
 
     @Field(() => String, { nullable: true })
-    startCursor: Date | string | null;
+    startCursor: string | null;
 
     @Field()
     hasNextPage: boolean;
