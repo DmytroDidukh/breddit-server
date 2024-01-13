@@ -1,6 +1,5 @@
 import {
     EntityData,
-    EntityManager,
     EntityRepository,
     FilterQuery,
     FindOneOrFailOptions,
@@ -22,26 +21,26 @@ export class BaseRepository<T extends BaseEntity> extends EntityRepository<T> {
         }
     }
 
-    public async createAndSave(data: RequiredEntityData<T>, em: EntityManager): Promise<T> {
+    public async createAndSave(data: RequiredEntityData<T>): Promise<T> {
         const entity = this.create(data);
-        await em.persistAndFlush(entity);
+        await this.em.persistAndFlush(entity);
 
         return entity;
     }
 
-    public async updateAndSave(id: number, data: EntityData<T>, em: EntityManager): Promise<T> {
+    public async updateAndSave(id: number, data: EntityData<T>): Promise<T> {
         const entity = await this.findOneByIdOrFail(id);
 
         const updatedEntity = wrap(entity).assign(data, { mergeObjects: true });
-        await em.persistAndFlush(updatedEntity);
+        await this.em.persistAndFlush(updatedEntity);
 
         return updatedEntity;
     }
 
-    public async deleteAndSave(id: number, em: EntityManager): Promise<boolean> {
+    public async deleteAndSave(id: number): Promise<boolean> {
         const entity = await this.findOneByIdOrFail(id);
 
-        await em.removeAndFlush(entity);
+        await this.em.removeAndFlush(entity);
 
         return true;
     }

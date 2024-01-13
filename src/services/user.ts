@@ -1,5 +1,4 @@
 import { FindOneOrFailOptions } from '@mikro-orm/core';
-import { SqlEntityManager } from '@mikro-orm/postgresql';
 import { Inject, Service } from 'typedi';
 
 import { User } from '../entities';
@@ -11,18 +10,12 @@ export class UserService {
     @Inject()
     private readonly userRepository!: UserRepository;
 
-    @Inject()
-    private readonly em!: SqlEntityManager;
-
     getAll(): Promise<User[]> {
         return this.userRepository.find({});
     }
 
     create(username: string, hashedPassword: string, email: string): Promise<User> {
-        return this.userRepository.createAndSave(
-            { username, password: hashedPassword, email },
-            this.em,
-        );
+        return this.userRepository.createAndSave({ username, password: hashedPassword, email });
     }
 
     findOneByUsername(username: string): Promise<User | null> {
@@ -42,7 +35,7 @@ export class UserService {
     }
 
     update(id: number, data: Partial<User>): Promise<User> {
-        return this.userRepository.updateAndSave(id, data, this.em);
+        return this.userRepository.updateAndSave(id, data);
     }
 
     delete(id: number, userId: number): Promise<boolean> {
@@ -50,6 +43,6 @@ export class UserService {
             throw new AuthorizationError('You have no permission to delete this user.');
         }
 
-        return this.userRepository.deleteAndSave(id, this.em);
+        return this.userRepository.deleteAndSave(id);
     }
 }

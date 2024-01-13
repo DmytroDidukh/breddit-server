@@ -47,7 +47,7 @@ export class PostService {
     async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
         const author = await this.userService.findOneByIdOrFail(authorId);
 
-        const post = await this.postRepository.createAndSave({ ...postInput, author }, this.em);
+        const post = await this.postRepository.createAndSave({ ...postInput, author });
 
         return { post };
     }
@@ -71,7 +71,7 @@ export class PostService {
             updateData.content = postInput.content;
         }
 
-        const updatedPost = await this.postRepository.updateAndSave(id, updateData, this.em);
+        const updatedPost = await this.postRepository.updateAndSave(id, updateData);
 
         return { post: updatedPost };
     }
@@ -83,7 +83,7 @@ export class PostService {
             throw new AuthorizationError('You have no permission to delete this post.');
         }
 
-        return this.postRepository.deleteAndSave(id, this.em);
+        return this.postRepository.deleteAndSave(id);
     }
 
     async getPostsByAuthor(
