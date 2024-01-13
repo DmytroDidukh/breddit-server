@@ -1,4 +1,14 @@
-import { Arg, Ctx, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import {
+    Arg,
+    Ctx,
+    FieldResolver,
+    Int,
+    Mutation,
+    Query,
+    Resolver,
+    Root,
+    UseMiddleware,
+} from 'type-graphql';
 import { Inject, Service } from 'typedi';
 
 import { MyContext } from '../context';
@@ -7,10 +17,21 @@ import { AuthenticationMiddleware } from '../middlewares';
 import { UserService } from '../services';
 
 @Service()
-@Resolver()
+@Resolver(User)
 export class UserResolver {
     @Inject()
     private readonly userService!: UserService;
+
+    @FieldResolver(() => String)
+    email(@Root() root: User, @Ctx() ctx: MyContext) {
+        const { userId } = ctx.req.session!;
+
+        if (userId === root.id) {
+            return root.email;
+        }
+
+        return '';
+    }
 
     @Query(() => User, { nullable: true })
     @UseMiddleware(AuthenticationMiddleware)
