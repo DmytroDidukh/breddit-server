@@ -24,6 +24,12 @@ export class UserResolver {
         return this.userService.getAll();
     }
 
+    @Query(() => User, { nullable: true })
+    @UseMiddleware(AuthenticationMiddleware)
+    user(@Arg('id', () => Int) id: number): Promise<User | null> {
+        return this.userService.findOneById(id);
+    }
+
     @Mutation(() => Boolean)
     @UseMiddleware(AuthenticationMiddleware)
     async deleteUser(@Arg('id', () => Int) id: number, @Ctx() ctx: MyContext): Promise<boolean> {
