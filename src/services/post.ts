@@ -29,6 +29,7 @@ export class PostService {
             .orderBy({ 'p.createdAt': QueryOrder.DESC })
             .where(cursor ? { createdAt: { $lt: cursor } } : {})
             .limit(maxLimit + 1) // Fetch one extra record to determine if there's a next page
+            .leftJoinAndSelect('p.author', 'a')
             .getResultList();
 
         const pageInfo = this.buildPageInfo(posts, maxLimit, cursor);
@@ -97,6 +98,7 @@ export class PostService {
             .orderBy({ 'p.createdAt': QueryOrder.DESC })
             .andWhere(cursor ? { createdAt: { $lt: cursor } } : {})
             .limit(maxLimit + 1)
+            .leftJoinAndSelect('p.author', 'a')
             .getResultList();
 
         const pageInfo = this.buildPageInfo(posts, maxLimit, cursor);
