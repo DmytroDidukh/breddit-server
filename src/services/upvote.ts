@@ -1,4 +1,3 @@
-import { SqlEntityManager } from '@mikro-orm/postgresql';
 import { Inject, Service } from 'typedi';
 
 import { PostService } from './post';
@@ -15,9 +14,6 @@ export class UpvoteService {
     @Inject()
     private readonly upvoteRepository!: UpvoteRepository;
 
-    @Inject()
-    private readonly em!: SqlEntityManager;
-
     async vote(value: number, userId: number, postId: number): Promise<boolean> {
         const existingUpvote = await this.upvoteRepository.findOne({ userId, postId });
 
@@ -28,13 +24,16 @@ export class UpvoteService {
         const isUpvote = value !== -1;
         const insertValue = isUpvote ? 1 : -1;
 
-        await this.em.upsert(Upvote, {
-            id: userId + postId,
-            value: insertValue,
-            userId,
-            postId,
+        await this.upvoteRepository.executeInTransaction(async (em) => {
+            await em.upsert(Upvote, {
+                id: userId + postId,
+                value: insertValue,
+                userId,
+                postId,
+            });
+
+            await this.postService.updatePoints(postId, insertValue);
         });
-        await this.postService.updatePoints(postId, insertValue);
 
         return true;
     }

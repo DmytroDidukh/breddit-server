@@ -1,5 +1,6 @@
 import {
     EntityData,
+    EntityManager,
     EntityRepository,
     FilterQuery,
     FindOneOrFailOptions,
@@ -43,5 +44,13 @@ export class BaseRepository<T extends BaseEntity> extends EntityRepository<T> {
         await this.em.removeAndFlush(entity);
 
         return true;
+    }
+
+    public async executeInTransaction<TResult>(
+        action: (em: EntityManager) => Promise<TResult>,
+    ): Promise<TResult> {
+        return this.em.transactional(async (em: EntityManager) => {
+            return action(em);
+        });
     }
 }
