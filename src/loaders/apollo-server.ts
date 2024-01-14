@@ -5,7 +5,7 @@ import { Container } from 'typedi';
 
 import { __prod__ } from '../constants';
 import { MyContext } from '../context';
-import { AuthResolver, PostResolver, UserResolver } from '../resolvers';
+import { AuthResolver, PostResolver, UpvoteResolver, UserResolver } from '../resolvers';
 import { ErrorHandlerService } from '../services';
 
 const errorHandler = new ErrorHandlerService();
@@ -14,7 +14,7 @@ async function setupApolloServer(): Promise<ApolloServer<MyContext>> {
     try {
         const apolloServer = new ApolloServer<MyContext>({
             schema: await buildSchema({
-                resolvers: [PostResolver, AuthResolver, UserResolver],
+                resolvers: [PostResolver, AuthResolver, UserResolver, UpvoteResolver],
                 validate: false,
                 container: Container,
             }),

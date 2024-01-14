@@ -1,7 +1,5 @@
-import { BaseRepository } from './base';
+import { EntityRepository } from '@mikro-orm/core';
 
 import { Upvote } from '../entities';
 
-export class UpvoteRepository extends BaseRepository<Upvote> {
-    name: string = 'Upvote';
-}
+export class UpvoteRepository extends EntityRepository<Upvote> {}
