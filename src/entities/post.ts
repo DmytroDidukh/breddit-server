@@ -1,7 +1,8 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { Field, ObjectType } from 'type-graphql';
 
 import { BaseEntity } from './base-entity';
+import { Upvote } from './upvote';
 import { User } from './user';
 
 import { PostRepository } from '../repositories';
@@ -24,4 +25,7 @@ export class Post extends BaseEntity {
     @Field()
     @ManyToOne(() => User)
     author!: User;
+
+    @OneToMany(() => Upvote, (upvote) => upvote.post, { orphanRemoval: true })
+    upvotes = new Collection<Upvote>(this);
 }

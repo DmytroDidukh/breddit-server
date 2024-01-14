@@ -3,6 +3,7 @@ import { Field, ObjectType } from 'type-graphql';
 
 import { BaseEntity } from './base-entity';
 import { Post } from './post';
+import { Upvote } from './upvote';
 
 import { UserRepository } from '../repositories';
 
@@ -20,7 +21,9 @@ export class User extends BaseEntity {
     @Property({ type: 'text', unique: true })
     email!: string;
 
-    // @Field(() => [Post], { nullable: false, defaultValue: [] })
     @OneToMany(() => Post, (post) => post.author, { orphanRemoval: true })
     posts = new Collection<Post>(this);
+
+    @OneToMany(() => Upvote, (upvote) => upvote.user, { orphanRemoval: true })
+    upvotes = new Collection<Upvote>(this);
 }
