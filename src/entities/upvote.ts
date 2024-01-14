@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { ObjectType } from 'type-graphql';
 
 import { BaseEntity } from './base-entity';
@@ -22,6 +22,6 @@ export class Upvote extends BaseEntity {
     @PrimaryKey()
     postId: number;
 
-    @OneToMany(() => Post, (post) => post.upvotes, { orphanRemoval: true })
+    @ManyToOne(() => Post)
     post!: Post;
 }
