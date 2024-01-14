@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 import { __prod__ } from './constants';
-import { Post, User } from './entities';
+import { Post, Upvote, User } from './entities';
 
 export default {
     migrations: {
@@ -12,7 +12,7 @@ export default {
         pattern: /^[\w-]+\d+\.[tj]s$/,
     },
     allowGlobalContext: true,
-    entities: [Post, User],
+    entities: [Post, User, Upvote],
     dbName: 'breddit',
     user: 'postgres',
     password: '875621',
