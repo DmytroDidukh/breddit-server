@@ -1,8 +1,8 @@
 import { IDatabaseDriver, MikroORM } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
+// import { Post, Upvote, User } from '../entities';
 import mikroOrmConfig from '../mikro-orm.config';
-// import { Post, User, Upvote } from '../entities';
 
 async function setupDatabase(): Promise<MikroORM<IDatabaseDriver>> {
     try {

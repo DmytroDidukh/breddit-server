@@ -214,6 +214,15 @@
           "nullable": false,
           "mappedType": "integer"
         },
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
         "value": {
           "name": "value",
           "type": "int",

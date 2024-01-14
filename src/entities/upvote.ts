@@ -19,6 +19,9 @@ import { UpvoteRepository } from '../repositories';
 @Unique({ properties: ['userId', 'postId'] })
 export class Upvote extends MikroOrmBaseEntity<AnyEntity, number> {
     @Property({ type: 'int' })
+    id!: number;
+
+    @Property({ type: 'int' })
     value: number;
 
     @PrimaryKey()

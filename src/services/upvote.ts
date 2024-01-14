@@ -28,13 +28,14 @@ export class UpvoteService {
         const isUpvote = value !== -1;
         const insertValue = isUpvote ? 1 : -1;
 
-        const upvote = await this.em.upsert(Upvote, {
+        await this.em.upsert(Upvote, {
+            id: userId + postId,
             value: insertValue,
             userId,
             postId,
         });
         await this.postService.updatePoints(postId, insertValue);
-        console.log(upvote);
+
         return true;
     }
 }
