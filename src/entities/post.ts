@@ -19,8 +19,8 @@ export class Post extends BaseEntity {
     content!: string;
 
     @Field()
-    @Property({ type: 'int', default: 0 })
-    points?: number;
+    @Property({ type: 'int' })
+    points: number;
 
     @Field()
     @ManyToOne(() => User)

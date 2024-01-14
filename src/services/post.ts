@@ -47,7 +47,7 @@ export class PostService {
     async create(postInput: CreatePostInput, authorId: number): Promise<CreatePostResult> {
         const author = await this.userService.findOneByIdOrFail(authorId);
 
-        const post = await this.postRepository.createAndSave({ ...postInput, author });
+        const post = await this.postRepository.createAndSave({ ...postInput, author, points: 0 });
 
         return { post };
     }
@@ -107,6 +107,17 @@ export class PostService {
             items: posts,
             pageInfo,
         };
+    }
+
+    async updatePoints(postId: number, value: number): Promise<boolean> {
+        const post = await this.postRepository.findOneByIdOrFail(postId);
+
+        const updateData: Partial<Post> = {};
+        updateData.points = post.points + value;
+
+        await this.postRepository.updateAndSave(postId, updateData);
+
+        return true;
     }
 
     private ensureMaxLimit(limit: number) {
