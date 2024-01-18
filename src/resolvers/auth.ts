@@ -22,6 +22,7 @@ export class AuthResolver {
         @Arg('user') { username, password, email }: SignUpInput,
         @Ctx() ctx: MyContext,
     ): Promise<SignUpResult> {
+        console.log('signUp');
         const validationResult = await this.validationService.validateInput<SignUpInput>(
             SignUpInput,
             {
