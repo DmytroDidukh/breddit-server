@@ -17,22 +17,25 @@ export class UpvoteService {
     async vote(value: number, userId: number, postId: number): Promise<boolean> {
         const existingUpvote = await this.upvoteRepository.findOne({ userId, postId });
 
-        if (existingUpvote) {
-            throw new ConflictError('You already voted on this post');
-        }
+        let points: number;
 
-        const isUpvote = value !== -1;
-        const insertValue = isUpvote ? 1 : -1;
+        if (existingUpvote && existingUpvote.value === value) {
+            throw new ConflictError('You already voted on this post');
+        } else if (existingUpvote && existingUpvote.value !== value) {
+            points = 2 * value;
+        } else {
+            points = value;
+        }
 
         await this.upvoteRepository.executeInTransaction(async (em) => {
             await em.upsert(Upvote, {
                 id: userId + postId,
-                value: insertValue,
+                value,
                 userId,
                 postId,
             });
 
-            await this.postService.updatePoints(postId, insertValue);
+            await this.postService.updatePoints(postId, points);
         });
 
         return true;
