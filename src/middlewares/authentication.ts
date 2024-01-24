@@ -7,7 +7,7 @@ const AuthenticationMiddleware: MiddlewareFn<MyContext> = async ({ context }, ne
     if (!context.req.session!.userId) {
         throw new AuthenticationError();
     }
-
+    console.log('AuthenticationMiddleware');
     return next();
 };
 
